@@ -1,3 +1,4 @@
+import {exec} from 'child_process';
 import fs from 'fs';
 import objectAssign from 'object-assign';
 
@@ -39,7 +40,21 @@ function replaceDependencies(patterns, json) {
             return result;
         }, {});
     });
+}
 
+function addScripts(json) {
+    json.scripts = objectAssign({}, json.scripts);
+    json.scripts.postpublish = [
+        'echo postpublishadded',
+        json.scripts.postversion
+    ].filter((cmd) => cmd).join(' && ');
+    json.scripts.postversion = [
+        'echo postversionadded',
+        json.scripts.postversion
+    ].filter((cmd) => cmd).join(' && ');
+}
+
+function writePackageJSON(json) {
     fs.writeFile('package.json', JSON.stringify(json, null, 2), 'utf8', (writeErr) => {
         if (writeErr) {
             console.log('WRITE ERROR FILES');
@@ -48,13 +63,17 @@ function replaceDependencies(patterns, json) {
 }
 
 function publish() {
-    console.log('PUBLISH');
+    exec(`npm version patch`, (err, stdout, stderr) => {
+        console.log(stdout);
+    });
 }
 
-const json = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-const options = json.publishr;
+const packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const options = packageJSON.publishr;
 
 
-replaceFiles(options.files);
-replaceDependencies(options.dependencies, json);
-publish();
+//replaceFiles(options.files);
+replaceDependencies(options.dependencies, packageJSON);
+addScripts(packageJSON);
+//writePackageJSON(packageJSON);
+//publish();
