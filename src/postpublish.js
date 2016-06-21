@@ -1,4 +1,10 @@
-#!/usr/bin/env node
+import {exec} from 'child_process';
 
 
-console.log('postpublish');
+export default function postpublish() {
+  exec('git clean -d && git checkout .', (err, stdout) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
