@@ -1,6 +1,6 @@
 {
   "name": "publishr",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A tool for simultaneous publishing of git and npm packages.",
   "main": "lib/index.js",
   "scripts": {
