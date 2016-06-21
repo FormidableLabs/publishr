@@ -2,13 +2,15 @@
   "name": "publishr",
   "version": "0.0.9",
   "description": "A tool for simultaneous publishing of git and npm packages.",
-  "main": "lib/index.js",
+  "bin": {
+    "publishr": "lib/cli.js"
+  },
   "scripts": {
     "build": "rimraf lib && babel src/ -d lib/",
     "lint": "eslint src",
     "test": "npm run lint",
-    "postpublish": "node lib/index.js postpublish",
-    "postversion": "npm run build && node lib/index.js postversion"
+    "postpublish": "node lib/cli.js postpublish",
+    "postversion": "npm run build && node lib/cli.js postversion"
   },
   "keywords": [
     "git",
