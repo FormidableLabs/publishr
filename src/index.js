@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import postpublish from './postpublish';
+import postversion from './postversion';
+
 
 const cmd = process.argv[2];
 
