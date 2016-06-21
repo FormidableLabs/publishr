@@ -7,8 +7,8 @@
     "build": "rimraf lib && babel src/ -d lib/",
     "lint": "eslint src",
     "test": "npm run lint",
-    "postpublish": "./lib/index.js postpublish",
-    "postversion": "./lib/index.js postversion"
+    "postpublish": "node lib/index.js postpublish",
+    "postversion": "node lib/index.js postversion"
   },
   "keywords": [
     "git",
