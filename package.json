@@ -8,7 +8,7 @@
     "lint": "eslint src",
     "test": "npm run lint",
     "postpublish": "node lib/index.js postpublish",
-    "postversion": "node lib/index.js postversion"
+    "postversion": "npm run build && node lib/index.js postversion"
   },
   "keywords": [
     "git",
