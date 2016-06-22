@@ -10,7 +10,8 @@
     "lint": "eslint src",
     "test": "npm run lint",
     "postpublish": "node lib/cli.js postpublish",
-    "postversion": "npm run build && node lib/cli.js postversion"
+    "postversion": "node lib/cli.js postversion",
+    "prepublish": "npm run build"
   },
   "keywords": [
     "git",
@@ -29,7 +30,8 @@
     "babel-eslint": "^6.0.4",
     "eslint": "^1.0.0",
     "eslint-config-defaults": "^9.0.0",
-    "eslint-plugin-filenames": "^0.2.0"
+    "eslint-plugin-filenames": "^0.2.0",
+    "rimraf": "^2.5.2"
   },
   "publishr": {
     "dependencies": [
