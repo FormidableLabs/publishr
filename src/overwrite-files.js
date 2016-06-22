@@ -3,16 +3,17 @@ import fs from "fs";
 
 const overwriteFiles = (json) => {
   Object.keys(json.publishr.files).forEach((key) => {
-    fs.readFile(json.publishr.files[key], "utf8", (readErr, contents) => {
-      if (readErr) {
-        console.log("READ ERROR FILES");
+    const oldFilePath = json.publishr.files[key];
+    const newFilePath = key;
 
-        return;
+    fs.readFile(oldFilePath, "utf8", (readErr, contents) => {
+      if (readErr) {
+        throw new Error(`READ ERROR: ${oldFilePath}`);
       }
 
-      fs.writeFile(key, contents, "utf8", (writeErr) => {
+      fs.writeFile(newFilePath, contents, "utf8", (writeErr) => {
         if (writeErr) {
-          console.log("WRITE ERROR FILES");
+          throw new Error("WRITE ERROR ${newFilePath}");
         }
       });
     });
@@ -20,7 +21,7 @@ const overwriteFiles = (json) => {
 
   fs.writeFile("package.json", JSON.stringify(json, null, 2), "utf8", (writeErr) => {
     if (writeErr) {
-      console.log("WRITE ERROR FILES");
+      throw new Error("WRITE ERROR: package.json");
     }
   });
 };

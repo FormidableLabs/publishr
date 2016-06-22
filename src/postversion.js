@@ -6,9 +6,7 @@ import overwriteFiles from "./overwrite-files";
 const postversion = () => {
   fs.readFile("package.json", "utf8", (readErr, contents) => {
     if (readErr) {
-      console.log("READ ERROR");
-
-      return;
+      throw new Error("READ ERROR: package.json");
     }
 
     const packageJSON = JSON.parse(contents);

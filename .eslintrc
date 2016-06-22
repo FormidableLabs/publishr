@@ -3,5 +3,3 @@
   - "defaults/configurations/walmart/es6"
 "env":
   "node": true
-"rules":
-  "no-console": 0

@@ -1,12 +1,8 @@
-import {exec} from "child_process";
+import fixFiles from "./fix-files";
 
 
 const postpublish = () => {
-  exec("git clean -df && git checkout .", (err) => {
-    if (err) {
-      console.log(err);
-    }
-  });
+  fixFiles();
 };
 
 export default postpublish;
