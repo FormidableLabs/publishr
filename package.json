@@ -1,6 +1,6 @@
 {
   "name": "publishr",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "A tool for harmonious publishing of git and npm packages.",
   "bin": {
     "publishr": "lib/cli.js"
