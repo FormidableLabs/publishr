@@ -1,4 +1,5 @@
 import fixFiles from "./fix-files";
+import fs from 'fs';
 
 
 const postpublish = () => {
