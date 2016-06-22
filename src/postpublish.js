@@ -1,10 +1,12 @@
-import {exec} from 'child_process';
+import {exec} from "child_process";
 
 
-export default function postpublish() {
-  exec('git clean -df && git checkout .', (err, stdout) => {
+const postpublish = () => {
+  exec("git clean -df && git checkout .", (err) => {
     if (err) {
       console.log(err);
     }
   });
-}
+};
+
+export default postpublish;

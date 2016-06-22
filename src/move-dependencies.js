@@ -1,7 +1,7 @@
-import objectAssign from 'object-assign';
+import objectAssign from "object-assign";
 
 
-export default function moveDependencies(json) {
+const moveDependencies = (json) => {
   const dependencyKeys = Object.keys(json.dependencies);
 
   json.devDependencies = objectAssign({}, json.devDependencies);
@@ -22,4 +22,6 @@ export default function moveDependencies(json) {
       return result;
     }, {});
   });
-}
+};
+
+export default moveDependencies;

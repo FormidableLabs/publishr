@@ -1,12 +1,12 @@
-import fs from 'fs';
-import moveDependencies from './move-dependencies';
-import overwriteFiles from './overwrite-files';
+import fs from "fs";
+import moveDependencies from "./move-dependencies";
+import overwriteFiles from "./overwrite-files";
 
 
-export default function postversion() {
-  fs.readFile('package.json', 'utf8', (readErr, contents) => {
+const postversion = () => {
+  fs.readFile("package.json", "utf8", (readErr, contents) => {
     if (readErr) {
-      console.log('READ ERROR');
+      console.log("READ ERROR");
 
       return;
     }
@@ -16,4 +16,6 @@ export default function postversion() {
     moveDependencies(packageJSON);
     overwriteFiles(packageJSON);
   });
-}
+};
+
+export default postversion;
