@@ -1,18 +1,19 @@
 import fs from "fs";
-import moveDependencies from "./move-dependencies";
 import overwriteFiles from "./overwrite-files";
+import overwritePackage from "./overwrite-package";
 
 
 const postversion = () => {
-  fs.readFile("package.json", "utf8", (readErr, contents) => {
-    if (readErr) {
-      throw new Error("READ ERROR: package.json");
+  fs.readFile("package.json", "utf8", (err, contents) => {
+    if (err) {
+      throw new Error("Error reading package.json.");
     }
 
     const packageJSON = JSON.parse(contents);
 
-    moveDependencies(packageJSON);
-    overwriteFiles(packageJSON);
+    overwriteFiles(packageJSON).then((files) => {
+      overwritePackage(packageJSON, files);
+    });
   });
 };
 

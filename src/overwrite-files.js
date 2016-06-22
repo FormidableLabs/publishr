@@ -1,28 +1,68 @@
 import fs from "fs";
 
 
-const overwriteFiles = (json) => {
-  Object.keys(json.publishr.files).forEach((key) => {
-    const oldFilePath = json.publishr.files[key];
-    const newFilePath = key;
-
-    fs.readFile(oldFilePath, "utf8", (readErr, contents) => {
-      if (readErr) {
-        throw new Error(`READ ERROR: ${oldFilePath}`);
-      }
-
-      fs.writeFile(newFilePath, contents, "utf8", (writeErr) => {
-        if (writeErr) {
-          throw new Error("WRITE ERROR ${newFilePath}");
+const statFiles = (files) => {
+  return Promise.all(files.map((file) => {
+    return new Promise((resolve, reject) => {
+      fs.stat(file.newPath, (err) => {
+        if (err && err.code !== "ENOENT") {
+          return reject(err);
+        } else if (!err) {
+          file.created = false;
+        } else {
+          file.created = true;
         }
+
+        return resolve(file);
       });
     });
-  });
+  }));
+};
 
-  fs.writeFile("package.json", JSON.stringify(json, null, 2), "utf8", (writeErr) => {
-    if (writeErr) {
-      throw new Error("WRITE ERROR: package.json");
-    }
+const readFiles = (files) => {
+  return Promise.all(files.map((file) => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(file.oldPath, "utf8", (err, contents) => {
+        if (err) {
+          return reject(err);
+        }
+
+        file.contents = contents;
+
+        return resolve(file);
+      });
+    });
+  }));
+};
+
+const writeFiles = (files) => {
+  return Promise.all(files.map((file) => {
+    return new Promise((resolve, reject) => {
+      fs.writeFile(file.newPath, file.contents, "utf8", (err) => {
+        if (err) {
+          return reject(err);
+        }
+
+        file.written = true;
+
+        return resolve(file);
+      });
+    });
+  }));
+};
+
+const overwriteFiles = (json) => {
+  return new Promise((resolve, reject) => {
+    const files = Object.keys(json.publishr.files).map((file) => ({
+      newPath: file,
+      oldPath: json.publishr.files[file]
+    }));
+
+    statFiles(files)
+    .then(readFiles)
+    .then(writeFiles)
+    .then((result) => resolve(result))
+    .catch((err) => reject(err));
   });
 };
 
