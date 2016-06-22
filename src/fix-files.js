@@ -3,9 +3,9 @@ import rm from "rimraf";
 
 
 const checkoutFile = (file) => {
-  exec(`git checkout ${file}`, (err) => {
+  exec(`git checkout ${file.path}`, (err) => {
     if (err) {
-      throw new Error(`Error checking out ${file}.`);
+      throw new Error(`Error checking out ${file.path}.`);
     }
   });
 };
@@ -21,10 +21,10 @@ const removeFile = (file) => {
 const fixFiles = (json) => {
   const files = json._publishr;
 
-  files.push([{
+  files.push({
     path: "package.json",
     created: false
-  }]);
+  });
 
   files.forEach((file) => {
     if (file.created) {
