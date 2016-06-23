@@ -6,6 +6,7 @@ check:
         statements: 100
 instrumentation:
     root: src
+    include-all-sources: true
 reporting:
     reports:
         - html
