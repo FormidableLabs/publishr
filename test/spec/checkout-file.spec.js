@@ -18,12 +18,13 @@ describe("checkoutFile", () => {
     childProcess.exec.restore();
   });
 
-  it("should handle a checkout error", () => {
+  it("should throw on a checkout error", () => {
     sinon.stub(childProcess, "exec", (path, cb) => {
       cb("mock error");
     });
 
-    checkoutFile("checkout.js");
-
+    expect(() => {
+      checkoutFile("checkout.js");
+    }).to.throw("Error checking out checkout.js.");
   });
 });
