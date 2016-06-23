@@ -18,13 +18,23 @@ describe("checkoutFile", () => {
     childProcess.exec.restore();
   });
 
-  it("should throw on a checkout error", () => {
-    sinon.stub(childProcess, "exec", (path, cb) => {
-      cb("mock error");
-    });
+  it("should throw on an exec error", () => {
+    sinon.stub(childProcess, "exec", (filePath, cb) => cb("mock error"));
 
     expect(() => {
       checkoutFile("checkout.js");
     }).to.throw("Error checking out checkout.js.");
+
+    childProcess.exec.restore();
+  });
+
+  it("should not throw without an exec error", () => {
+    sinon.stub(childProcess, "exec", (filePath, cb) => cb());
+
+    expect(() => {
+      checkoutFile("checkout.js");
+    }).to.not.throw();
+
+    childProcess.exec.restore();
   });
 });
