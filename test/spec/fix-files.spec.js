@@ -6,11 +6,11 @@ const checkoutFile = sinon.stub();
 const removeFile = sinon.stub();
 const fixFiles = proxyquire("fix-files", {
   "./checkout-file": {
-      default: checkoutFile
-    },
+    default: checkoutFile
+  },
   "./remove-file": {
-      default: removeFile
-    }
+    default: removeFile
+  }
 }).default;
 
 describe("fixFiles", () => {

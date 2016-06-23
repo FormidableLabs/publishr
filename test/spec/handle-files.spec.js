@@ -1,5 +1,6 @@
+/* eslint-disable max-params */
+
 import proxyquire from "proxyquire";
-import sinon from "sinon";
 
 
 describe("handleFiles", () => {

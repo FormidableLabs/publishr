@@ -4,7 +4,7 @@ import sinon from "sinon";
 
 const childProcess = {exec: () => {}};
 const checkoutFile = proxyquire("checkout-file", {
-  child_process: childProcess
+  "child_process": childProcess
 }).default;
 
 describe("checkoutFile", () => {

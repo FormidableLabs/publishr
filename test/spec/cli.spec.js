@@ -33,7 +33,7 @@ describe("cli", () => {
 
   it("should throw an error on bad commands", () => {
     expect(() => {
-      cli("preversion")
+      cli("preversion");
     }).to.throw("Unknown command: preversion");
   });
 });

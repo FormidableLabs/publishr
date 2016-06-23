@@ -33,7 +33,7 @@ const updateStats = (json, files) => {
   }));
   json._publishr.push({
     created: false,
-    path: 'package.json'
+    path: "package.json"
   });
 };
 

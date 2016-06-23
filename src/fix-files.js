@@ -1,5 +1,5 @@
-import checkoutFile from './checkout-file';
-import removeFile from './remove-file';
+import checkoutFile from "./checkout-file";
+import removeFile from "./remove-file";
 
 
 const fixFiles = (json) => {
