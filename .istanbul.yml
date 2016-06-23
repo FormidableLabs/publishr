@@ -1,0 +1,17 @@
+check:
+    global:
+        branches: 100
+        functions: 100
+        lines: 100
+        statements: 100
+instrumentation:
+    root: src
+reporting:
+    reports:
+        - html
+        - lcovonly
+    watermarks:
+        branches: [80, 100]
+        functions: [80, 100]
+        statements: [80, 100]
+        lines: [80, 100]

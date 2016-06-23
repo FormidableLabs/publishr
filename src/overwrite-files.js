@@ -1,4 +1,5 @@
 import fs from "fs";
+import {Promise} from "es6-promise";
 
 
 const statFiles = (files) => {

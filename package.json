@@ -7,10 +7,12 @@
   },
   "scripts": {
     "build": "rimraf lib && babel src/ -d lib/",
-    "lint": "eslint src",
+    "cover": "NODE_PATH=./src babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha -- --require test/main.js --recursive test",
+    "lint": "eslint src test",
     "test": "npm run lint",
     "postpublish": "node lib/cli.js postpublish",
-    "postversion": "npm run build && node lib/cli.js postversion"
+    "postversion": "npm run build && node lib/cli.js postversion",
+    "unit": "NODE_PATH=./src babel-node node_modules/.bin/_mocha --require test/main.js --recursive test"
   },
   "keywords": [
     "git",
@@ -23,14 +25,21 @@
     "babel-cli": "^6.9.1",
     "babel-core": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
+    "es6-promise": "^3.2.1",
     "object-assign": "^4.1.0",
     "rimraf": "^2.5.2"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",
+    "babel-istanbul": "^0.8.0",
+    "chai": "^3.5.0",
     "eslint": "^1.0.0",
     "eslint-config-defaults": "^9.0.0",
-    "eslint-plugin-filenames": "^0.2.0"
+    "eslint-plugin-filenames": "^0.2.0",
+    "mocha": "^2.5.3",
+    "proxyquire": "^1.7.9",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
   },
   "publishr": {
     "dependencies": [

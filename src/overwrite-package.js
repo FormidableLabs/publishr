@@ -1,5 +1,6 @@
 import fs from "fs";
 import objectAssign from "object-assign";
+import {Promise} from "es6-promise";
 
 
 const updateDependencies = (json) => {
@@ -30,6 +31,10 @@ const updateStats = (json, files) => {
     created: file.created,
     path: file.newPath
   }));
+  json._publishr.push({
+    created: false,
+    path: 'package.json'
+  });
 };
 
 const overwritePackage = (json, files) => {

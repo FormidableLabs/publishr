@@ -1,36 +1,13 @@
-import {exec} from "child_process";
-import rm from "rimraf";
+import checkoutFile from './checkout-file';
+import removeFile from './remove-file';
 
-
-const checkoutFile = (file) => {
-  exec(`git checkout ${file.path}`, (err) => {
-    if (err) {
-      throw new Error(`Error checking out ${file.path}.`);
-    }
-  });
-};
-
-const removeFile = (file) => {
-  rm(file.path, (err) => {
-    if (err) {
-      throw new Error(`Error removing ${file}.`);
-    }
-  });
-};
 
 const fixFiles = (json) => {
-  const files = json._publishr;
-
-  files.push({
-    path: "package.json",
-    created: false
-  });
-
-  files.forEach((file) => {
+  json._publishr.forEach((file) => {
     if (file.created) {
-      removeFile(file);
+      removeFile(file.path);
     } else {
-      checkoutFile(file);
+      checkoutFile(file.path);
     }
   });
 };
