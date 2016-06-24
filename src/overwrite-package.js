@@ -1,6 +1,6 @@
 import {Promise} from "es6-promise";
 import fs from "fs";
-import handlePackage from "handle-package";
+import handlePackage from "./handle-package";
 
 
 const overwritePackage = (json, files) => {
