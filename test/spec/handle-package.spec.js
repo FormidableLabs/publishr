@@ -27,7 +27,7 @@ describe("handlePackage", () => {
         devDependencies: {
           babel: "1.0.0",
           "babel-core": "1.0.0",
-          eslint: "1.0.0",
+          eslint: "1.0.0"
         },
         publishr: {
           dependencies: ["^babel"]
@@ -116,7 +116,7 @@ describe("handlePackage", () => {
           created: false,
           path: "package.json"
         }]
-      })
+      });
     });
   });
 });
