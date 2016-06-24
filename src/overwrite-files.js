@@ -1,4 +1,4 @@
-import handleFiles from "./handle-files";
+import fileUtils from "./file-utils";
 import {Promise} from "es6-promise";
 
 
@@ -9,9 +9,9 @@ const overwriteFiles = (json) => {
       oldPath: json.publishr.files[file]
     }));
 
-    handleFiles.stat(files)
-    .then(handleFiles.read)
-    .then(handleFiles.write)
+    fileUtils.statFiles(files)
+    .then(fileUtils.readFiles)
+    .then(fileUtils.writeFiles)
     .then((result) => resolve(result))
     .catch((err) => reject(err));
   });

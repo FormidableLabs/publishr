@@ -1,9 +1,32 @@
-import fs from "fs";
+import {exec} from "child_process";
 import {Promise} from "es6-promise";
+import fs from "fs";
 
 
-const handleFiles = {
-  read(files) {
+const fileUtils = {
+  checkoutFile(filePath) {
+    return new Promise((resolve, reject) => {
+      exec(`git checkout ${filePath}`, (err, stdout) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(stdout);
+      });
+    });
+  },
+
+  fixFiles(files) {
+    files.forEach((file) => {
+      if (file.created) {
+        fileUtils.removeFile(file.path);
+      } else {
+        fileUtils.checkoutFile(file.path);
+      }
+    });
+  },
+
+  readFiles(files) {
     return Promise.all(files.map((file) => {
       return new Promise((resolve, reject) => {
         fs.readFile(file.oldPath, "utf8", (err, contents) => {
@@ -19,7 +42,19 @@ const handleFiles = {
     }));
   },
 
-  stat(files) {
+  removeFile(filePath) {
+    return new Promise((resolve, reject) => {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve();
+      });
+    });
+  },
+
+  statFiles(files) {
     return Promise.all(files.map((file) => {
       return new Promise((resolve, reject) => {
         fs.stat(file.newPath, (err) => {
@@ -37,7 +72,7 @@ const handleFiles = {
     }));
   },
 
-  write(files) {
+  writeFiles(files) {
     return Promise.all(files.map((file) => {
       return new Promise((resolve, reject) => {
         fs.writeFile(file.newPath, file.contents, "utf8", (err) => {
@@ -54,4 +89,4 @@ const handleFiles = {
   }
 };
 
-export default handleFiles;
+export default fileUtils;

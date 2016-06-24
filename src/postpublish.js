@@ -1,4 +1,4 @@
-import fixFiles from "./fix-files";
+import fileUtils from "./file-utils";
 import fs from "fs";
 
 
@@ -10,7 +10,7 @@ const postpublish = () => {
 
     const packageJSON = JSON.parse(contents);
 
-    fixFiles(packageJSON);
+    fileUtils.fixFiles(packageJSON._publishr);
   });
 };
 

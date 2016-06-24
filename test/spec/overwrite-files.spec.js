@@ -1,5 +1,5 @@
 import {Promise} from "es6-promise";
-import handleFiles from "handle-files";
+import fileUtils from "file-utils";
 import overwriteFiles from "overwrite-files";
 import sinon from "sinon";
 
@@ -8,9 +8,9 @@ describe("overwriteFiles", () => {
   it("should stat, read, and write files", () => {
     const handler = (files) => Promise.resolve(files);
 
-    sinon.stub(handleFiles, "stat", handler);
-    sinon.stub(handleFiles, "read", handler);
-    sinon.stub(handleFiles, "write", handler);
+    sinon.stub(fileUtils, "statFiles", handler);
+    sinon.stub(fileUtils, "readFiles", handler);
+    sinon.stub(fileUtils, "writeFiles", handler);
 
     return overwriteFiles({
       publishr: {
@@ -20,9 +20,9 @@ describe("overwriteFiles", () => {
         }
       }
     }).then((files) => {
-      expect(handleFiles.stat).to.have.callCount(1);
-      expect(handleFiles.read).to.have.callCount(1);
-      expect(handleFiles.write).to.have.callCount(1);
+      expect(fileUtils.statFiles).to.have.callCount(1);
+      expect(fileUtils.readFiles).to.have.callCount(1);
+      expect(fileUtils.writeFiles).to.have.callCount(1);
       expect(files).to.deep.equal([{
         newPath: "first.js",
         oldPath: "first.js.publishr"
@@ -31,16 +31,16 @@ describe("overwriteFiles", () => {
         oldPath: "second.js.publishr"
       }]);
 
-      handleFiles.stat.restore();
-      handleFiles.read.restore();
-      handleFiles.write.restore();
+      fileUtils.statFiles.restore();
+      fileUtils.readFiles.restore();
+      fileUtils.writeFiles.restore();
     });
   });
 
   it("should reject on an error", () => {
     const mockErr = new Error("Something bad happend!");
 
-    sinon.stub(handleFiles, "stat", () => {
+    sinon.stub(fileUtils, "statFiles", () => {
       return new Promise((resolve, reject) => {
         reject(mockErr);
       });
@@ -55,7 +55,7 @@ describe("overwriteFiles", () => {
     }).catch((err) => {
       expect(err).to.equal(mockErr);
 
-      handleFiles.stat.restore();
+      fileUtils.statFiles.restore();
     });
   });
 });
