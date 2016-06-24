@@ -1,3 +1,4 @@
+import {Promise} from "es6-promise";
 import handleFiles from "handle-files";
 import overwriteFiles from "overwrite-files";
 import sinon from "sinon";
