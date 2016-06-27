@@ -29,68 +29,6 @@ describe("fileUtils", () => {
     });
   });
 
-  describe("fixFiles", () => {
-    it("should checkout files", () => {
-      sinon.stub(fileUtils, "checkoutFile");
-      sinon.stub(fileUtils, "removeFile");
-
-      fileUtils.fixFiles([{
-        created: false,
-        path: "checkout.js"
-      }]);
-      expect(fileUtils.removeFile).to.have.callCount(0);
-      expect(fileUtils.checkoutFile).to.have.callCount(1);
-      expect(fileUtils.checkoutFile).to.have.been.calledWith("checkout.js");
-
-      fileUtils.checkoutFile.restore();
-      fileUtils.removeFile.restore();
-    });
-
-    it("should remove files", () => {
-      sinon.stub(fileUtils, "checkoutFile");
-      sinon.stub(fileUtils, "removeFile");
-
-      fileUtils.fixFiles([{
-        created: true,
-        path: "remove.js"
-      }]);
-      expect(fileUtils.checkoutFile).to.have.callCount(0);
-      expect(fileUtils.removeFile).to.have.callCount(1);
-      expect(fileUtils.removeFile).to.have.been.calledWith("remove.js");
-
-      fileUtils.checkoutFile.restore();
-      fileUtils.removeFile.restore();
-    });
-
-    it("should handle multiple files", () => {
-      sinon.stub(fileUtils, "checkoutFile");
-      sinon.stub(fileUtils, "removeFile");
-
-      fileUtils.fixFiles([{
-        created: false,
-        path: "checkout1.js"
-      }, {
-        created: true,
-        path: "remove1.js"
-      }, {
-        created: false,
-        path: "checkout2.js"
-      }, {
-        created: true,
-        path: "remove2.js"
-      }]);
-      expect(fileUtils.checkoutFile).to.have.callCount(2);
-      expect(fileUtils.removeFile).to.have.callCount(2);
-      expect(fileUtils.checkoutFile).to.have.been.calledWith("checkout1.js");
-      expect(fileUtils.checkoutFile).to.have.been.calledWith("checkout2.js");
-      expect(fileUtils.removeFile).to.have.been.calledWith("remove1.js");
-      expect(fileUtils.removeFile).to.have.been.calledWith("remove2.js");
-
-      fileUtils.checkoutFile.restore();
-      fileUtils.removeFile.restore();
-    });
-  });
-
   describe("readFiles", () => {
     it("should append contents to files", () => {
       const files = [{
@@ -124,6 +62,40 @@ describe("fileUtils", () => {
       sinon.stub(fs, "readFile", (filePath, opts, cb) => cb("mock error"));
 
       return fileUtils.readFiles(files).catch((err) => {
+        expect(err).to.equal("mock error");
+
+        fs.readFile.restore();
+      });
+    });
+  });
+
+  describe("readPackage", () => {
+    it("should read the package.json file", () => {
+      sinon.stub(fs, "readFile", (filePath, opts, cb) => {
+        expect(filePath).to.equal("package.json");
+        expect(opts).to.equal("utf8");
+        cb(null, JSON.stringify({
+          dependencies: {
+            lodash: "1.0.0"
+          }
+        }));
+      });
+
+      return fileUtils.readPackage().then((contents) => {
+        expect(contents).to.deep.equal({
+          dependencies: {
+            lodash: "1.0.0"
+          }
+        });
+
+        fs.readFile.restore();
+      });
+    });
+
+    it("should reject on read error", () => {
+      sinon.stub(fs, "readFile", (filePath, opts, cb) => cb("mock error"));
+
+      return fileUtils.readPackage().catch((err) => {
         expect(err).to.equal("mock error");
 
         fs.readFile.restore();
@@ -252,6 +224,40 @@ describe("fileUtils", () => {
       sinon.stub(fs, "writeFile", (filePath, contents, opts, cb) => cb("mock error"));
 
       return fileUtils.writeFiles(files).catch((err) => {
+        expect(err).to.equal("mock error");
+
+        fs.writeFile.restore();
+      });
+    });
+  });
+
+  describe("writePackage", () => {
+    it("should write the package.json file", () => {
+      sinon.stub(fs, "writeFile", (filePath, contents, opts, cb) => {
+        expect(filePath).to.equal("package.json");
+        expect(contents).to.equal(JSON.stringify({
+          dependencies: {
+            lodash: "1.0.0"
+          }
+        }, null, 2));
+        expect(opts).to.equal("utf8");
+
+        cb();
+      });
+
+      return fileUtils.writePackage({
+        dependencies: {
+          lodash: "1.0.0"
+        }
+      }).then(() => {
+        fs.writeFile.restore();
+      });
+    });
+
+    it("should reject on read error", () => {
+      sinon.stub(fs, "writeFile", (filePath, contents, opts, cb) => cb("mock error"));
+
+      return fileUtils.writePackage().catch((err) => {
         expect(err).to.equal("mock error");
 
         fs.writeFile.restore();

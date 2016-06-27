@@ -16,16 +16,6 @@ const fileUtils = {
     });
   },
 
-  fixFiles(files) {
-    files.forEach((file) => {
-      if (file.created) {
-        fileUtils.removeFile(file.path);
-      } else {
-        fileUtils.checkoutFile(file.path);
-      }
-    });
-  },
-
   readFiles(files) {
     return Promise.all(files.map((file) => {
       return new Promise((resolve, reject) => {
@@ -40,6 +30,18 @@ const fileUtils = {
         });
       });
     }));
+  },
+
+  readPackage() {
+    return new Promise((resolve, reject) => {
+      fs.readFile("package.json", "utf8", (err, contents) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(JSON.parse(contents));
+      });
+    });
   },
 
   removeFile(filePath) {
@@ -86,6 +88,18 @@ const fileUtils = {
         });
       });
     }));
+  },
+
+  writePackage(json) {
+    return new Promise((resolve, reject) => {
+      fs.writeFile("package.json", JSON.stringify(json, null, 2), "utf8", (err) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve();
+      });
+    });
   }
 };
 
