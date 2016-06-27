@@ -1,7 +1,7 @@
 import objectAssign from "object-assign";
 
 
-const handlePackage = {
+const packageUtils = {
   updateDependencies(json) {
     if (!json.publishr) {
       return json;
@@ -47,4 +47,4 @@ const handlePackage = {
   }
 };
 
-export default handlePackage;
+export default packageUtils;

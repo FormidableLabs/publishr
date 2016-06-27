@@ -1,7 +1,7 @@
 /* eslint-disable max-params */
 
 import fs from "fs";
-import handlePackage from "handle-package";
+import packageUtils from "package-utils";
 import overwritePackage from "overwrite-package";
 import sinon from "sinon";
 
@@ -24,15 +24,15 @@ describe("overwritePackage", () => {
     sinon.stub(fs, "writeFile", (filePath, contents, opts, cb) => {
       cb(null);
     });
-    sinon.stub(handlePackage, "updateDependencies");
-    sinon.stub(handlePackage, "updateMeta");
+    sinon.stub(packageUtils, "updateDependencies");
+    sinon.stub(packageUtils, "updateMeta");
 
     return overwritePackage(packageJSON, files).then(() => {
-      expect(handlePackage.updateDependencies).to.have.callCount(1);
-      expect(handlePackage.updateMeta).to.have.callCount(1);
+      expect(packageUtils.updateDependencies).to.have.callCount(1);
+      expect(packageUtils.updateMeta).to.have.callCount(1);
       expect(fs.writeFile).to.have.callCount(1);
-      expect(handlePackage.updateDependencies).to.have.been.calledWith(packageJSON);
-      expect(handlePackage.updateMeta).to.have.been.calledWith(packageJSON, files);
+      expect(packageUtils.updateDependencies).to.have.been.calledWith(packageJSON);
+      expect(packageUtils.updateMeta).to.have.been.calledWith(packageJSON, files);
       expect(fs.writeFile).to.have.been.calledWith(
         "package.json",
         JSON.stringify(packageJSON, null, 2),
@@ -40,8 +40,8 @@ describe("overwritePackage", () => {
       );
 
       fs.writeFile.restore();
-      handlePackage.updateDependencies.restore();
-      handlePackage.updateMeta.restore();
+      packageUtils.updateDependencies.restore();
+      packageUtils.updateMeta.restore();
     });
   });
 
@@ -62,16 +62,16 @@ describe("overwritePackage", () => {
     sinon.stub(fs, "writeFile", (filePath, contents, opts, cb) => {
       cb("mock error");
     });
-    sinon.stub(handlePackage, "updateDependencies");
-    sinon.stub(handlePackage, "updateMeta");
+    sinon.stub(packageUtils, "updateDependencies");
+    sinon.stub(packageUtils, "updateMeta");
 
     return overwritePackage(packageJSON, files).catch((err) => {
       expect(err).to.equal("mock error");
-      expect(handlePackage.updateDependencies).to.have.callCount(1);
-      expect(handlePackage.updateMeta).to.have.callCount(1);
+      expect(packageUtils.updateDependencies).to.have.callCount(1);
+      expect(packageUtils.updateMeta).to.have.callCount(1);
       expect(fs.writeFile).to.have.callCount(1);
-      expect(handlePackage.updateDependencies).to.have.been.calledWith(packageJSON);
-      expect(handlePackage.updateMeta).to.have.been.calledWith(packageJSON, files);
+      expect(packageUtils.updateDependencies).to.have.been.calledWith(packageJSON);
+      expect(packageUtils.updateMeta).to.have.been.calledWith(packageJSON, files);
       expect(fs.writeFile).to.have.been.calledWith(
         "package.json",
         JSON.stringify(packageJSON, null, 2),
@@ -79,8 +79,8 @@ describe("overwritePackage", () => {
       );
 
       fs.writeFile.restore();
-      handlePackage.updateDependencies.restore();
-      handlePackage.updateMeta.restore();
+      packageUtils.updateDependencies.restore();
+      packageUtils.updateMeta.restore();
     });
   });
 });

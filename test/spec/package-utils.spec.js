@@ -1,7 +1,7 @@
-import handlePackage from "handle-package";
+import packageUtils from "package-utils";
 
 
-describe("handlePackage", () => {
+describe("packageUtils", () => {
   describe("updateDependencies", () => {
     it("should move dependencies to devDependencies", () => {
       const packageJSON = {
@@ -18,7 +18,7 @@ describe("handlePackage", () => {
         }
       };
 
-      handlePackage.updateDependencies(packageJSON);
+      packageUtils.updateDependencies(packageJSON);
 
       expect(packageJSON).to.deep.equal({
         dependencies: {
@@ -45,7 +45,7 @@ describe("handlePackage", () => {
         }
       };
 
-      handlePackage.updateDependencies(packageJSON);
+      packageUtils.updateDependencies(packageJSON);
 
       expect(packageJSON).to.deep.equal({
         dependencies: {},
@@ -68,7 +68,7 @@ describe("handlePackage", () => {
         }
       };
 
-      handlePackage.updateDependencies(packageJSON);
+      packageUtils.updateDependencies(packageJSON);
 
       expect(packageJSON).to.deep.equal({
         dependencies: {
@@ -88,7 +88,7 @@ describe("handlePackage", () => {
         }
       };
 
-      handlePackage.updateDependencies(packageJSON);
+      packageUtils.updateDependencies(packageJSON);
 
       expect(packageJSON).to.deep.equal({
         dependencies: {
@@ -106,7 +106,7 @@ describe("handlePackage", () => {
         newPath: "file.js"
       }];
 
-      handlePackage.updateMeta(packageJSON, files);
+      packageUtils.updateMeta(packageJSON, files);
 
       expect(packageJSON).to.deep.equal({
         _publishr: [{

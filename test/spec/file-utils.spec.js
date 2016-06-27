@@ -35,8 +35,8 @@ describe("fileUtils", () => {
       sinon.stub(fileUtils, "removeFile");
 
       fileUtils.fixFiles([{
-          created: false,
-          path: "checkout.js"
+        created: false,
+        path: "checkout.js"
       }]);
       expect(fileUtils.removeFile).to.have.callCount(0);
       expect(fileUtils.checkoutFile).to.have.callCount(1);
@@ -51,8 +51,8 @@ describe("fileUtils", () => {
       sinon.stub(fileUtils, "removeFile");
 
       fileUtils.fixFiles([{
-          created: true,
-          path: "remove.js"
+        created: true,
+        path: "remove.js"
       }]);
       expect(fileUtils.checkoutFile).to.have.callCount(0);
       expect(fileUtils.removeFile).to.have.callCount(1);
@@ -136,7 +136,7 @@ describe("fileUtils", () => {
       sinon.stub(fs, "unlink", (filePath, cb) => cb());
 
       return fileUtils.removeFile("remove.js").then((result) => {
-        expect(result).to.be.undefined;
+        expect(result).to.equal(undefined);
 
         fs.unlink.restore();
       });
