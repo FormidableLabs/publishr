@@ -40,8 +40,9 @@ describe("fileHandler", () => {
         }]
       });
       expect(fileUtils.checkoutFile).to.have.callCount(0);
-      expect(fileUtils.removeFile).to.have.callCount(1);
-      expect(fileUtils.removeFile).to.have.been.calledWith("remove.js");
+      expect(fileUtils.removeFile)
+      .to.have.callCount(1).and
+      .to.have.been.calledWith("remove.js");
     });
 
     it("should handle multiple files", () => {
@@ -63,12 +64,14 @@ describe("fileHandler", () => {
           path: "remove2.js"
         }]
       });
-      expect(fileUtils.checkoutFile).to.have.callCount(2);
-      expect(fileUtils.removeFile).to.have.callCount(2);
-      expect(fileUtils.checkoutFile).to.have.been.calledWith("checkout1.js");
-      expect(fileUtils.checkoutFile).to.have.been.calledWith("checkout2.js");
-      expect(fileUtils.removeFile).to.have.been.calledWith("remove1.js");
-      expect(fileUtils.removeFile).to.have.been.calledWith("remove2.js");
+      expect(fileUtils.checkoutFile)
+      .to.have.callCount(2).and
+      .to.have.been.calledWith("checkout1.js").and
+      .to.have.been.calledWith("checkout2.js");
+      expect(fileUtils.removeFile)
+      .to.have.callCount(2).and
+      .to.have.been.calledWith("remove1.js").and
+      .to.have.been.calledWith("remove2.js");
     });
   });
 
@@ -89,17 +92,18 @@ describe("fileHandler", () => {
           }
         }
       }).then((json) => {
-        expect(fileUtils.statFiles).to.have.callCount(1);
-        expect(fileUtils.readFiles).to.have.callCount(1);
-        expect(fileUtils.writeFiles).to.have.callCount(1);
-        expect(fileHandler.overwritePackage).to.have.callCount(1);
-        expect(fileUtils.statFiles).to.have.been.calledWith([{
+        expect(fileUtils.statFiles)
+        .to.have.callCount(1).and
+        .to.have.been.calledWith([{
           newPath: "first.js",
           oldPath: "first.js.publishr"
         }, {
           newPath: "second.js",
           oldPath: "second.js.publishr"
         }]);
+        expect(fileUtils.readFiles).to.have.callCount(1);
+        expect(fileUtils.writeFiles).to.have.callCount(1);
+        expect(fileHandler.overwritePackage).to.have.callCount(1);
         expect(json).to.deep.equal({
           publishr: {
             files: {
@@ -114,11 +118,7 @@ describe("fileHandler", () => {
     it("should reject on an error", () => {
       const mockErr = new Error("Something bad happend!");
 
-      sandbox.stub(fileUtils, "statFiles", () => {
-        return new Promise((resolve, reject) => {
-          reject(mockErr);
-        });
-      });
+      sandbox.stub(fileUtils, "statFiles", () => Promise.reject(mockErr));
 
       return fileHandler.overwriteFiles({
         publishr: {
@@ -152,12 +152,15 @@ describe("fileHandler", () => {
       sandbox.stub(packageUtils, "updateMeta");
 
       return fileHandler.overwritePackage(packageJSON, files).then(() => {
-        expect(packageUtils.updateDependencies).to.have.callCount(1);
-        expect(packageUtils.updateMeta).to.have.callCount(1);
-        expect(fileUtils.writePackage).to.have.callCount(1);
-        expect(packageUtils.updateDependencies).to.have.been.calledWith(packageJSON);
-        expect(packageUtils.updateMeta).to.have.been.calledWith(packageJSON, files);
-        expect(fileUtils.writePackage).to.have.been.calledWith({
+        expect(packageUtils.updateDependencies)
+        .to.have.callCount(1).and
+        .to.have.been.calledWith(packageJSON);
+        expect(packageUtils.updateMeta)
+        .to.have.callCount(1).and
+        .to.have.been.calledWith(packageJSON, files);
+        expect(fileUtils.writePackage)
+        .to.have.callCount(1).and
+        .to.have.been.calledWith({
           dependencies: {
             babel: "1.0.0"
           },

@@ -25,8 +25,9 @@ describe("postpublish", () => {
 
     return postpublish().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
-      expect(fileHandler.fixFiles).to.have.callCount(1);
-      expect(fileHandler.fixFiles).to.have.been.calledWith({
+      expect(fileHandler.fixFiles)
+      .to.have.callCount(1).and
+      .to.have.been.calledWith({
         _publishr: [{
           created: true,
           path: "file.js"

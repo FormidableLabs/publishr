@@ -25,8 +25,9 @@ describe("postversion", () => {
 
     return postversion().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
-      expect(fileHandler.overwriteFiles).to.have.callCount(1);
-      expect(fileHandler.overwriteFiles).to.have.been.calledWith({
+      expect(fileHandler.overwriteFiles)
+      .to.have.callCount(1).and
+      .to.have.been.calledWith({
         publishr: {
           dependencies: ["^babel"]
         }
