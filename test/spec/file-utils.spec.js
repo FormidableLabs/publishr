@@ -1,15 +1,18 @@
 /* eslint-disable max-params, max-nested-callbacks */
 
 import childProcess from "child_process";
+import {Promise} from "es6-promise";
 import fileUtils from "file-utils";
-import fs from "fs";
+import mockfs from "mock-fs";
 import sinon from "sinon";
+import testHelpers from "../test-helpers";
 
 
 describe("fileUtils", () => {
   const sandbox = sinon.sandbox.create();
 
   afterEach(() => {
+    mockfs.restore();
     sandbox.restore();
   });
 
@@ -39,14 +42,17 @@ describe("fileUtils", () => {
         oldPath: "file-2.js"
       }];
 
-      sandbox.stub(fs, "readFile", (filePath, opts, cb) => cb(null, "mock contents"));
+      mockfs({
+        "file-1.js": "mock contents file 1",
+        "file-2.js": "mock contents file 2"
+      });
 
       return fileUtils.readFiles(files).then((result) => {
         expect(result).to.deep.equal([{
-          contents: "mock contents",
+          contents: "mock contents file 1",
           oldPath: "file-1.js"
         }, {
-          contents: "mock contents",
+          contents: "mock contents file 2",
           oldPath: "file-2.js"
         }]);
       });
@@ -55,28 +61,24 @@ describe("fileUtils", () => {
     it("should reject on read error", () => {
       const files = [{
         oldPath: "file-1.js"
-      }, {
-        oldPath: "file-2.js"
       }];
 
-      sandbox.stub(fs, "readFile", (filePath, opts, cb) => cb("mock error"));
+      mockfs({});
 
       return fileUtils.readFiles(files).catch((err) => {
-        expect(err).to.equal("mock error");
+        expect(err.code).to.equal("ENOENT");
       });
     });
   });
 
   describe("readPackage", () => {
     it("should read the package.json file", () => {
-      sandbox.stub(fs, "readFile", (filePath, opts, cb) => {
-        expect(filePath).to.equal("package.json");
-        expect(opts).to.equal("utf8");
-        cb(null, JSON.stringify({
+      mockfs({
+        "package.json": JSON.stringify({
           dependencies: {
             lodash: "1.0.0"
           }
-        }));
+        }, null, 2)
       });
 
       return fileUtils.readPackage().then((contents) => {
@@ -89,7 +91,9 @@ describe("fileUtils", () => {
     });
 
     it("should reject on a JSON parse error", () => {
-      sandbox.stub(fs, "readFile", (filePath, opts, cb) => cb(null, "bad"));
+      mockfs({
+        "package.json": "bad"
+      });
 
       return fileUtils.readPackage().catch((err) => {
         expect(err).to.be.an.instanceOf(SyntaxError);
@@ -97,68 +101,53 @@ describe("fileUtils", () => {
     });
 
     it("should reject on read error", () => {
-      sandbox.stub(fs, "readFile", (filePath, opts, cb) => cb("mock error"));
+      mockfs({});
 
       return fileUtils.readPackage().catch((err) => {
-        expect(err).to.equal("mock error");
+        expect(err.code).to.equal("ENOENT");
       });
     });
   });
 
   describe("removeFile", () => {
     it("should not throw without a remove file error", () => {
-      sandbox.stub(fs, "unlink", (filePath, cb) => cb());
-
-      return fileUtils.removeFile("remove.js").then((result) => {
-        expect(result).to.equal(undefined);
+      mockfs({
+        "remove.js": "mock contents"
       });
+
+      return fileUtils
+        .removeFile("remove.js")
+        .then(() => testHelpers.fileExists("remove.js"))
+        .then((fileExists) => expect(fileExists).to.be.false);
     });
 
     it("should reject on an error", () => {
-      sandbox.stub(fs, "unlink", (filePath, cb) => cb("mock error"));
+      mockfs({});
 
       return fileUtils.removeFile("remove.js").catch((err) => {
-        expect(err).to.equal("mock error");
+        expect(err.code).to.equal("ENOENT");
       });
     });
   });
 
   describe("statFiles", () => {
-    it("should mark files created", () => {
+    it("should mark files created or not created", () => {
       const files = [{
-        newPath: "new-file-1.js"
+        newPath: "new-file.js"
       }, {
-        newPath: "new-file-2.js"
+        newPath: "existing-file.js"
       }];
 
-      sandbox.stub(fs, "stat", (filePath, cb) => cb({code: "ENOENT"}));
-
-      return fileUtils.statFiles(files).then((result) => {
-        expect(result).to.deep.equal([{
-          newPath: "new-file-1.js",
-          created: true
-        }, {
-          newPath: "new-file-2.js",
-          created: true
-        }]);
+      mockfs({
+        "existing-file.js": "mock contents"
       });
-    });
-
-    it("should mark files not created", () => {
-      const files = [{
-        newPath: "existing-file-1.js"
-      }, {
-        newPath: "existing-file-2.js"
-      }];
-
-      sandbox.stub(fs, "stat", (filePath, cb) => cb());
 
       return fileUtils.statFiles(files).then((result) => {
         expect(result).to.deep.equal([{
-          newPath: "existing-file-1.js",
-          created: false
+          newPath: "new-file.js",
+          created: true
         }, {
-          newPath: "existing-file-2.js",
+          newPath: "existing-file.js",
           created: false
         }]);
       });
@@ -166,13 +155,20 @@ describe("fileUtils", () => {
 
     it("should reject on other stat errors", () => {
       const files = [{
-        newPath: "existing-file-1.js"
+        newPath: "private/existing-file.js"
       }];
 
-      sandbox.stub(fs, "stat", (filePath, cb) => cb({code: "EIO"}));
+      mockfs({
+        "private": mockfs.directory({
+          items: {
+            "existing-file.js": "mock contents"
+          },
+          mode: "0000"
+        })
+      });
 
       return fileUtils.statFiles(files).catch((err) => {
-        expect(err).to.deep.equal({code: "EIO"});
+        expect(err.code).to.equal("EACCES");
       });
     });
   });
@@ -180,64 +176,78 @@ describe("fileUtils", () => {
   describe("writeFiles", () => {
     it("should write and mark files", () => {
       const files = [{
-        contents: "mock contents",
+        contents: "new contents 1",
         newPath: "file-1.js"
       }, {
-        contents: "mock contents",
+        contents: "new contents 2",
         newPath: "file-2.js"
       }];
 
-      sandbox.stub(fs, "writeFile", (filePath, contents, opts, cb) => cb());
+      mockfs({
+        "file-1.js": "old contents 1"
+      });
 
-      return fileUtils.writeFiles(files).then((result) => {
-        expect(result).to.deep.equal([{
-          contents: "mock contents",
+      return fileUtils
+      .writeFiles(files)
+      .then((result) => Promise.all([
+        Promise.resolve(result),
+        testHelpers.readFile(files[0].newPath),
+        testHelpers.readFile(files[1].newPath)
+      ]))
+      .then((results) => {
+        expect(results[0]).to.deep.equal([{
+          contents: "new contents 1",
           newPath: "file-1.js",
-          "written": true
+          written: true
         }, {
-          contents: "mock contents",
+          contents: "new contents 2",
           newPath: "file-2.js",
-          "written": true
+          written: true
         }]);
+
+        expect(results[1]).to.equal("new contents 1");
+        expect(results[2]).to.equal("new contents 2");
       });
     });
 
     it("should reject on write error", () => {
       const files = [{
-        contents: "mock contents",
+        contents: "new mock contents",
         newPath: "file-1.js"
-      }, {
-        contents: "mock contents",
-        newPath: "file-2.js"
       }];
 
-      sandbox.stub(fs, "writeFile", (filePath, contents, opts, cb) => cb("mock error"));
+      mockfs({
+        "file-1.js": mockfs.file({
+          mode: "0000"
+        })
+      });
 
       return fileUtils.writeFiles(files).catch((err) => {
-        expect(err).to.equal("mock error");
+        expect(err.code).to.equal("EACCES");
       });
     });
   });
 
   describe("writePackage", () => {
     it("should write the package.json file", () => {
-      sandbox.stub(fs, "writeFile", (filePath, contents, opts, cb) => {
-        expect(filePath).to.equal("package.json");
-        expect(contents).to.equal(JSON.stringify({
+      mockfs({
+        "package.json": JSON.stringify({
+          old: "contents"
+        })
+      });
+
+      return fileUtils
+        .writePackage({
           dependencies: {
             lodash: "1.0.0"
           }
-        }, null, 2));
-        expect(opts).to.equal("utf8");
-
-        cb();
-      });
-
-      return fileUtils.writePackage({
-        dependencies: {
-          lodash: "1.0.0"
-        }
-      });
+        })
+        .then(() => testHelpers.readFile("package.json"))
+        .then((result) => expect(result).to.equal(JSON.stringify({
+          dependencies: {
+            lodash: "1.0.0"
+          }
+        }, null, 2)));
     });
 
     it("should reject on a stringify error", () => {
@@ -250,11 +260,15 @@ describe("fileUtils", () => {
       });
     });
 
-    it("should reject on read error", () => {
-      sandbox.stub(fs, "writeFile", (filePath, contents, opts, cb) => cb("mock error"));
+    it("should reject on write error", () => {
+      mockfs({
+        "package.json": mockfs.file({
+          mode: "0000"
+        })
+      });
 
       return fileUtils.writePackage().catch((err) => {
-        expect(err).to.equal("mock error");
+        expect(err.code).to.equal("EACCES");
       });
     });
   });
