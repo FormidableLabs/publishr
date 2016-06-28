@@ -88,6 +88,14 @@ describe("fileUtils", () => {
       });
     });
 
+    it("should reject on a JSON parse error", () => {
+      sandbox.stub(fs, "readFile", (filePath, opts, cb) => cb(null, "bad"));
+
+      return fileUtils.readPackage().catch((err) => {
+        expect(err).to.be.an.instanceOf(SyntaxError);
+      });
+    });
+
     it("should reject on read error", () => {
       sandbox.stub(fs, "readFile", (filePath, opts, cb) => cb("mock error"));
 
@@ -229,6 +237,16 @@ describe("fileUtils", () => {
         dependencies: {
           lodash: "1.0.0"
         }
+      });
+    });
+
+    it("should reject on a stringify error", () => {
+      const packageJSON = {};
+
+      packageJSON.packageJSON = packageJSON; // Create a circular structure
+
+      return fileUtils.writePackage(packageJSON).catch((err) => {
+        expect(err).to.be.an.instanceOf(TypeError);
       });
     });
 
