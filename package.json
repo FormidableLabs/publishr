@@ -8,7 +8,7 @@
   "scripts": {
     "build": "rimraf lib && babel src/ -d lib/",
     "check-coverage": "babel-istanbul check-coverage",
-    "cover": "NODE_PATH=./src babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha -- --require test/main.js --recursive test",
+    "cover": "rimraf coverage && NODE_PATH=./src babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha -- --require test/main.js --recursive test",
     "lint": "eslint src test",
     "test": "npm run lint && npm run cover && npm run check-coverage",
     "postpublish": "node lib/cli.js postpublish",
@@ -34,6 +34,7 @@
     "babel-eslint": "^6.0.4",
     "babel-istanbul": "^0.8.0",
     "chai": "^3.5.0",
+    "coveralls": "^2.11.9",
     "eslint": "^1.0.0",
     "eslint-config-defaults": "^9.0.0",
     "eslint-plugin-filenames": "^0.2.0",
