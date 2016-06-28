@@ -6,6 +6,12 @@ import sinon from "sinon";
 
 
 describe("postversion", () => {
+  const sandbox = sinon.sandbox.create();
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   it("should overwrite files", () => {
     const contents = {
       publishr: {
@@ -14,8 +20,8 @@ describe("postversion", () => {
     };
     const files = [{newPath: "file.js"}];
 
-    sinon.stub(fileHandler, "overwriteFiles", () => Promise.resolve(files));
-    sinon.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
+    sandbox.stub(fileHandler, "overwriteFiles", () => Promise.resolve(files));
+    sandbox.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
 
     return postversion().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
@@ -25,9 +31,6 @@ describe("postversion", () => {
           dependencies: ["^babel"]
         }
       });
-
-      fileHandler.overwriteFiles.restore();
-      fileUtils.readPackage.restore();
     });
   });
 });
