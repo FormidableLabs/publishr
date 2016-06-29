@@ -6,7 +6,11 @@ import sinon from "sinon";
 
 
 describe("postpublish", () => {
-  const sandbox = sinon.sandbox.create();
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
 
   afterEach(() => {
     sandbox.restore();
@@ -26,13 +30,13 @@ describe("postpublish", () => {
     return postpublish().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
       expect(fileHandler.fixFiles)
-      .to.have.callCount(1).and
-      .to.have.been.calledWith({
-        _publishr: [{
-          created: true,
-          path: "file.js"
-        }]
-      });
+        .to.have.callCount(1).and
+        .to.have.been.calledWith({
+          _publishr: [{
+            created: true,
+            path: "file.js"
+          }]
+        });
     });
   });
 });

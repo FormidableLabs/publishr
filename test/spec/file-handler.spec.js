@@ -6,7 +6,11 @@ import sinon from "sinon";
 
 
 describe("fileHandler", () => {
-  const sandbox = sinon.sandbox.create();
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
 
   afterEach(() => {
     sandbox.restore();
@@ -25,8 +29,8 @@ describe("fileHandler", () => {
       });
       expect(fileUtils.removeFile).to.have.callCount(0);
       expect(fileUtils.checkoutFile)
-      .to.have.callCount(1).and
-      .to.have.been.calledWith("checkout.js");
+        .to.have.callCount(1).and
+        .to.have.been.calledWith("checkout.js");
     });
 
     it("should remove files", () => {
@@ -41,8 +45,8 @@ describe("fileHandler", () => {
       });
       expect(fileUtils.checkoutFile).to.have.callCount(0);
       expect(fileUtils.removeFile)
-      .to.have.callCount(1).and
-      .to.have.been.calledWith("remove.js");
+        .to.have.callCount(1).and
+        .to.have.been.calledWith("remove.js");
     });
 
     it("should handle multiple files", () => {
@@ -65,13 +69,13 @@ describe("fileHandler", () => {
         }]
       });
       expect(fileUtils.checkoutFile)
-      .to.have.callCount(2).and
-      .to.have.been.calledWith("checkout1.js").and
-      .to.have.been.calledWith("checkout2.js");
+        .to.have.callCount(2).and
+        .to.have.been.calledWith("checkout1.js").and
+        .to.have.been.calledWith("checkout2.js");
       expect(fileUtils.removeFile)
-      .to.have.callCount(2).and
-      .to.have.been.calledWith("remove1.js").and
-      .to.have.been.calledWith("remove2.js");
+        .to.have.callCount(2).and
+        .to.have.been.calledWith("remove1.js").and
+        .to.have.been.calledWith("remove2.js");
     });
   });
 
@@ -93,14 +97,14 @@ describe("fileHandler", () => {
         }
       }).then((json) => {
         expect(fileUtils.statFiles)
-        .to.have.callCount(1).and
-        .to.have.been.calledWith([{
-          newPath: "first.js",
-          oldPath: "first.js.publishr"
-        }, {
-          newPath: "second.js",
-          oldPath: "second.js.publishr"
-        }]);
+          .to.have.callCount(1).and
+          .to.have.been.calledWith([{
+            newPath: "first.js",
+            oldPath: "first.js.publishr"
+          }, {
+            newPath: "second.js",
+            oldPath: "second.js.publishr"
+          }]);
         expect(fileUtils.readFiles).to.have.callCount(1);
         expect(fileUtils.writeFiles).to.have.callCount(1);
         expect(fileHandler.overwritePackage).to.have.callCount(1);
@@ -153,21 +157,21 @@ describe("fileHandler", () => {
 
       return fileHandler.overwritePackage(packageJSON, files).then(() => {
         expect(packageUtils.updateDependencies)
-        .to.have.callCount(1).and
-        .to.have.been.calledWith(packageJSON);
+          .to.have.callCount(1).and
+          .to.have.been.calledWith(packageJSON);
         expect(packageUtils.updateMeta)
-        .to.have.callCount(1).and
-        .to.have.been.calledWith(packageJSON, files);
+          .to.have.callCount(1).and
+          .to.have.been.calledWith(packageJSON, files);
         expect(fileUtils.writePackage)
-        .to.have.callCount(1).and
-        .to.have.been.calledWith({
-          dependencies: {
-            babel: "1.0.0"
-          },
-          devDependencies: {
-            eslint: "1.0.0"
-          }
-        });
+          .to.have.callCount(1).and
+          .to.have.been.calledWith({
+            dependencies: {
+              babel: "1.0.0"
+            },
+            devDependencies: {
+              eslint: "1.0.0"
+            }
+          });
       });
     });
   });

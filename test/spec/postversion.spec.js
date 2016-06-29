@@ -6,10 +6,10 @@ import sinon from "sinon";
 
 
 describe("postversion", () => {
-  const sandbox = sinon.sandbox.create();
+  let sandbox;
 
-  afterEach(() => {
-    sandbox.restore();
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
   });
 
   it("should overwrite files", () => {
@@ -26,12 +26,12 @@ describe("postversion", () => {
     return postversion().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
       expect(fileHandler.overwriteFiles)
-      .to.have.callCount(1).and
-      .to.have.been.calledWith({
-        publishr: {
-          dependencies: ["^babel"]
-        }
-      });
+        .to.have.callCount(1).and
+        .to.have.been.calledWith({
+          publishr: {
+            dependencies: ["^babel"]
+          }
+        });
     });
   });
 });

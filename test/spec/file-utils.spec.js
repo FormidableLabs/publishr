@@ -9,7 +9,11 @@ import testHelpers from "../test-helpers";
 
 
 describe("fileUtils", () => {
-  const sandbox = sinon.sandbox.create();
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
 
   afterEach(() => {
     mockfs.restore();
@@ -118,7 +122,9 @@ describe("fileUtils", () => {
       return fileUtils
         .removeFile("remove.js")
         .then(() => testHelpers.fileExists("remove.js"))
-        .then((fileExists) => expect(fileExists).to.be.false);
+        .then((fileExists) => {
+          expect(fileExists).to.equal(false);
+        });
     });
 
     it("should reject on an error", () => {
