@@ -70,7 +70,7 @@ describe("fileUtils", () => {
       mockfs({});
 
       return fileUtils.readFiles(files).catch((err) => {
-        expect(err.code).to.equal("ENOENT");
+        expect(err).to.have.property("code", "ENOENT");
       });
     });
   });
@@ -108,7 +108,7 @@ describe("fileUtils", () => {
       mockfs({});
 
       return fileUtils.readPackage().catch((err) => {
-        expect(err.code).to.equal("ENOENT");
+        expect(err).to.have.property("code", "ENOENT");
       });
     });
   });
@@ -131,7 +131,7 @@ describe("fileUtils", () => {
       mockfs({});
 
       return fileUtils.removeFile("remove.js").catch((err) => {
-        expect(err.code).to.equal("ENOENT");
+        expect(err).to.have.property("code", "ENOENT");
       });
     });
   });
@@ -174,7 +174,7 @@ describe("fileUtils", () => {
       });
 
       return fileUtils.statFiles(files).catch((err) => {
-        expect(err.code).to.equal("EACCES");
+        expect(err).to.have.property("code", "EACCES");
       });
     });
   });
@@ -229,7 +229,7 @@ describe("fileUtils", () => {
       });
 
       return fileUtils.writeFiles(files).catch((err) => {
-        expect(err.code).to.equal("EACCES");
+        expect(err).to.have.property("code", "EACCES");
       });
     });
   });
@@ -274,7 +274,7 @@ describe("fileUtils", () => {
       });
 
       return fileUtils.writePackage().catch((err) => {
-        expect(err.code).to.equal("EACCES");
+        expect(err).to.have.property("code", "EACCES");
       });
     });
   });
