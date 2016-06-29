@@ -1,8 +1,13 @@
 language: node_js
 
 node_js:
+  - "0.12"
   - "4.4"
   - "5.12"
   - "6.2"
 
 sudo: false
+
+script:
+  - npm run test
+  - cat coverage/lcov.info | node_modules/.bin/coveralls || echo "Coveralls upload failed"

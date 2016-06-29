@@ -34,12 +34,16 @@ const fileUtils = {
 
   readPackage() {
     return new Promise((resolve, reject) => {
-      fs.readFile("package.json", "utf8", (err, contents) => {
-        if (err) {
-          return reject(err);
+      fs.readFile("package.json", "utf8", (readErr, contents) => {
+        if (readErr) {
+          return reject(readErr);
         }
 
-        return resolve(JSON.parse(contents));
+        try {
+          return resolve(JSON.parse(contents));
+        } catch (parseErr) {
+          return reject(parseErr);
+        }
       });
     });
   },
@@ -92,7 +96,15 @@ const fileUtils = {
 
   writePackage(json) {
     return new Promise((resolve, reject) => {
-      fs.writeFile("package.json", JSON.stringify(json, null, 2), "utf8", (err) => {
+      let contents;
+
+      try {
+        contents = JSON.stringify(json, null, 2);
+      } catch (err) {
+        return reject(err);
+      }
+
+      fs.writeFile("package.json", contents, "utf8", (err) => {
         if (err) {
           return reject(err);
         }

@@ -6,6 +6,16 @@ import sinon from "sinon";
 
 
 describe("postpublish", () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   it("should fix files", () => {
     const contents = {
       _publishr: [{
@@ -14,21 +24,19 @@ describe("postpublish", () => {
       }]
     };
 
-    sinon.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
-    sinon.stub(fileHandler, "fixFiles");
+    sandbox.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
+    sandbox.stub(fileHandler, "fixFiles");
 
     return postpublish().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
-      expect(fileHandler.fixFiles).to.have.callCount(1);
-      expect(fileHandler.fixFiles).to.have.been.calledWith({
-        _publishr: [{
-          created: true,
-          path: "file.js"
-        }]
-      });
-
-      fileHandler.fixFiles.restore();
-      fileUtils.readPackage.restore();
+      expect(fileHandler.fixFiles)
+        .to.have.callCount(1).and
+        .to.have.been.calledWith({
+          _publishr: [{
+            created: true,
+            path: "file.js"
+          }]
+        });
     });
   });
 });
