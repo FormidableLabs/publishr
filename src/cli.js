@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import dryRun from "./dry-run";
 import postpublish from "./postpublish";
 import postversion from "./postversion";
 
@@ -9,6 +10,8 @@ const main = (cmd) => {
     postpublish();
   } else if (cmd === "postversion") {
     postversion();
+  } else if (cmd === "dry-run") {
+    dryRun();
   } else {
     throw new Error(`Unknown command: ${cmd}`);
   }

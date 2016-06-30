@@ -1,4 +1,4 @@
-import {exec} from "child_process";
+import childProcess from "child_process";
 import {Promise} from "es6-promise";
 import fs from "fs";
 
@@ -6,7 +6,7 @@ import fs from "fs";
 const fileUtils = {
   checkoutFile(filePath) {
     return new Promise((resolve, reject) => {
-      exec(`git checkout ${filePath}`, (err, stdout) => {
+      childProcess.exec(`git checkout ${filePath}`, (err, stdout) => {
         if (err) {
           return reject(err);
         }
