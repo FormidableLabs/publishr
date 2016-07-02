@@ -110,6 +110,7 @@ describe("fileHandler", () => {
         expect(fileHandler.overwritePackage).to.have.callCount(1);
         expect(json).to.deep.equal({
           publishr: {
+            dependencies: [],
             files: {
               "first.js": "first.js.publishr",
               "second.js": "second.js.publishr"

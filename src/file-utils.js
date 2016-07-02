@@ -16,36 +16,32 @@ const fileUtils = {
     });
   },
 
+  readFile(filePath) {
+    return new Promise((resolve, reject) => {
+      fs.readFile(filePath, "utf8", (err, contents) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(contents);
+      });
+    });
+  },
+
   readFiles(files) {
     return Promise.all(files.map((file) => {
-      return new Promise((resolve, reject) => {
-        fs.readFile(file.oldPath, "utf8", (err, contents) => {
-          if (err) {
-            return reject(err);
-          }
+      return fileUtils.readFile(file.oldPath).then((contents) => {
+        file.contents = contents;
 
-          file.contents = contents;
-
-          return resolve(file);
-        });
+        return Promise.resolve(file);
       });
     }));
   },
 
   readPackage() {
-    return new Promise((resolve, reject) => {
-      fs.readFile("package.json", "utf8", (readErr, contents) => {
-        if (readErr) {
-          return reject(readErr);
-        }
-
-        try {
-          return resolve(JSON.parse(contents));
-        } catch (parseErr) {
-          return reject(parseErr);
-        }
-      });
-    });
+    return fileUtils
+      .readFile("package.json")
+      .then((contents) => Promise.resolve(JSON.parse(contents)));
   },
 
   removeFile(filePath) {
@@ -78,33 +74,9 @@ const fileUtils = {
     }));
   },
 
-  writeFiles(files) {
-    return Promise.all(files.map((file) => {
-      return new Promise((resolve, reject) => {
-        fs.writeFile(file.newPath, file.contents, "utf8", (err) => {
-          if (err) {
-            return reject(err);
-          }
-
-          file.written = true;
-
-          return resolve(file);
-        });
-      });
-    }));
-  },
-
-  writePackage(json) {
+  writeFile(filePath, contents) {
     return new Promise((resolve, reject) => {
-      let contents;
-
-      try {
-        contents = JSON.stringify(json, null, 2);
-      } catch (err) {
-        return reject(err);
-      }
-
-      fs.writeFile("package.json", contents, "utf8", (err) => {
+      fs.writeFile(filePath, contents, "utf8", (err) => {
         if (err) {
           return reject(err);
         }
@@ -112,6 +84,28 @@ const fileUtils = {
         return resolve();
       });
     });
+  },
+
+  writeFiles(files) {
+    return Promise.all(files.map((file) => {
+      return fileUtils.writeFile(file.newPath, file.contents).then(() => {
+          file.written = true;
+
+          return Promise.resolve(file);
+        });
+    }));
+  },
+
+  writePackage(json) {
+    let contents;
+
+    try {
+      contents = JSON.stringify(json, null, 2);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    return fileUtils.writeFile("package.json", contents);
   }
 };
 

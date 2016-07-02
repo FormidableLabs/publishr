@@ -3,7 +3,7 @@ import objectAssign from "object-assign";
 
 const packageUtils = {
   updateDependencies(json) {
-    if (!json.publishr) {
+    if (!json.publishr || !json.publishr.dependencies) {
       return json;
     }
 
