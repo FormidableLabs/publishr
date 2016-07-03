@@ -77,6 +77,15 @@ describe("fileHandler", () => {
         .to.have.been.calledWith("remove1.js").and
         .to.have.been.calledWith("remove2.js");
     });
+
+    it("should handle no _publishr config", () => {
+      sandbox.stub(fileUtils, "checkoutFile");
+      sandbox.stub(fileUtils, "removeFile");
+
+      fileHandler.fixFiles({});
+      expect(fileUtils.checkoutFile).to.have.callCount(0);
+      expect(fileUtils.removeFile).to.have.callCount(0);
+    });
   });
 
   describe("overwriteFiles", () => {
@@ -133,6 +142,30 @@ describe("fileHandler", () => {
         }
       }).catch((err) => {
         expect(err).to.equal(mockErr);
+      });
+    });
+
+     it("should handle no publishr config", () => {
+      const handler = (files) => Promise.resolve(files);
+
+      sandbox.stub(fileUtils, "statFiles", handler);
+      sandbox.stub(fileUtils, "readFiles", handler);
+      sandbox.stub(fileUtils, "writeFiles", handler);
+      sandbox.stub(fileHandler, "overwritePackage", handler);
+
+      return fileHandler.overwriteFiles({}).then((json) => {
+        expect(fileUtils.statFiles)
+          .to.have.callCount(1).and
+          .to.have.been.calledWith([]);
+        expect(fileUtils.readFiles).to.have.callCount(1);
+        expect(fileUtils.writeFiles).to.have.callCount(1);
+        expect(fileHandler.overwritePackage).to.have.callCount(1);
+        expect(json).to.deep.equal({
+          publishr: {
+            dependencies: [],
+            files: {}
+          }
+        });
       });
     });
   });

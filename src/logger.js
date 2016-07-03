@@ -1,15 +1,15 @@
 import chalk from "chalk";
-import symbols from "log-symbols";
+import logSymbols from "log-symbols";
 
 
 const logger = {
   silent: true,
 
   error(message, err) {
-    logger.log(`${symbols.error}  ${chalk.gray(message)}`);
+    logger.log(`${logSymbols.error}  ${chalk.gray(message)}`);
 
     if (err && err.message) {
-      logger.log(`${chalk.red(err.message)}`);
+      logger.log(chalk.red(err.message));
     }
   },
 
@@ -26,7 +26,7 @@ const logger = {
   },
 
   success(message) {
-    logger.log(`${symbols.success}  ${chalk.gray(message)}`);
+    logger.log(`${logSymbols.success}  ${chalk.gray(message)}`);
   }
 };
 
