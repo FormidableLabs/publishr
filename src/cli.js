@@ -13,7 +13,7 @@ const main = (cmd) => {
   } else if (cmd === "dry-run") {
     dryRunner.run().catch((err) => console.log(err));
   } else {
-    throw new Error(`Unknown command: ${cmd}`);
+    throw new Error(`Unknown command ${cmd}`);
   }
 };
 

@@ -78,13 +78,20 @@ const dryRunner = {
     let err;
 
     if (!packageJSON || !packageJSON.publishr) {
-      err = new Error("No valid publishr configuration in package.json");
-      logger.error("validate package.json", err);
-    } else {
-      logger.success("validate package.json");
+      err = new Error("No publishr configuration in 'package.json'");
+    } else if (!packageJSON.publishr.dependencies && !packageJSON.publishr.files) {
+      err = new Error("No files or dependencies in publishr configuration");
     }
 
-    return err ? Promise.reject(err) : Promise.resolve(packageJSON);
+    if (err) {
+      logger.error("validate package.json", err);
+
+      return Promise.reject(err);
+    }
+
+    logger.success("validate package.json");
+
+    return Promise.resolve(packageJSON);
   }
 };
 
