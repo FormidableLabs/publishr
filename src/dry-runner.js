@@ -48,20 +48,20 @@ const dryRunner = {
     return Promise.resolve();
   },
 
-  postpublish(result) {
+  postpublish() {
     logger.info("Validating postpublish...");
 
-    return postpublish();
+    return postpublish.run();
   },
 
   postversion() {
     logger.info("Validating postversion...");
 
-    return postversion();
+    return postversion.run();
   },
 
   restoreFileSystem() {
-    mockfs.restore()
+    mockfs.restore();
 
     return Promise.resolve();
   },

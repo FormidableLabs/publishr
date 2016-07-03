@@ -106,10 +106,10 @@ const fileUtils = {
   writeFiles(files) {
     return Promise.all(files.map((file) => {
       return fileUtils.writeFile(file.newPath, file.contents).then(() => {
-          file.written = true;
+        file.written = true;
 
-          return Promise.resolve(file);
-        });
+        return Promise.resolve(file);
+      });
     }));
   },
 
