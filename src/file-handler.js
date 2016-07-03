@@ -7,11 +7,9 @@ const fileHandler = {
     json._publishr = json._publishr || [];
 
     return Promise.all(json._publishr.map((file) => {
-      if (file.created) {
-        return fileUtils.removeFile(file.path);
-      }
-
-      return fileUtils.checkoutFile(file.path);
+      return file.created ?
+        fileUtils.removeFile(file.path) :
+        fileUtils.checkoutFile(file.path);
     }));
   },
 
