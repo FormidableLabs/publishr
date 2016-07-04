@@ -20,7 +20,7 @@ const packageUtils = {
         (key) => regex.test(key)
       ).forEach((key) => {
         json.devDependencies[key] = json.dependencies[key];
-        logger.success(`move dependency ${key}`);
+        logger.success(`dev '${key}'`);
       });
 
       json.dependencies = dependencyKeys.filter(

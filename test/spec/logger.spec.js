@@ -52,25 +52,24 @@ describe("logger", () => {
       .to.have.been.calledWith(chalk.white("mock message"));
   });
 
-  it("should log with silent false", () => {
+  it("should log when enabled", () => {
     sandbox.stub(console, "log");
-    logger.silent = false;
 
+    logger.enable();
     logger.log("mock message");
-    expect(console.log)
+    expect(console.log) // eslint-disable-line no-console
       .to.have.callCount(1).and
       .to.have.been.calledWith("mock message");
 
-    logger.silent = true;
+    logger.disable();
   });
 
-  it("should not log with silent true", () => {
+  it("should not log when disabled", () => {
     sandbox.stub(console, "log");
-    logger.silent = true;
 
     logger.log("mock message");
-    expect(console.log).to.have.callCount(0);
+    expect(console.log).to.have.callCount(0); // eslint-disable-line no-console
 
-    logger.silent = true;
+    logger.disable();
   });
 });

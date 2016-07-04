@@ -1,5 +1,3 @@
-/* eslint-disable max-params, max-nested-callbacks */
-
 import childProcess from "child_process";
 import {Promise} from "es6-promise";
 import fileUtils from "file-utils";
@@ -197,8 +195,8 @@ describe("fileUtils", () => {
       .writeFiles(files)
       .then((result) => Promise.all([
         Promise.resolve(result),
-        testHelpers.readFile(files[0].newPath),
-        testHelpers.readFile(files[1].newPath)
+        fileUtils.readFile(files[0].newPath),
+        fileUtils.readFile(files[1].newPath)
       ]))
       .then((results) => {
         expect(results[0]).to.deep.equal([{
@@ -248,7 +246,7 @@ describe("fileUtils", () => {
             lodash: "1.0.0"
           }
         })
-        .then(() => testHelpers.readFile("package.json"))
+        .then(() => fileUtils.readFile("package.json"))
         .then((result) => expect(result).to.equal(JSON.stringify({
           dependencies: {
             lodash: "1.0.0"

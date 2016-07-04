@@ -1,41 +1,52 @@
 import childProcess from "child_process";
 import {Promise} from "es6-promise";
 import fileUtils from "./file-utils";
+import fs from "fs";
 import logger from "./logger";
 import mockfs from "mock-fs";
 import postpublish from "./postpublish";
 import postversion from "./postversion";
 
 
-const exec = childProcess.exec;
-
 const dryRunner = {
   afterDryRun() {
-    childProcess.exec = exec;
-    logger.silent = true;
+    logger.disable();
+    dryRunner.restoreExec();
+    dryRunner.restoreFileSystem();
 
-    return dryRunner.restoreFileSystem();
+    return Promise.resolve();
   },
 
   beforeDryRun() {
-    childProcess.exec = dryRunner.dryExec;
-    logger.silent = false;
+    logger.enable();
+    dryRunner.patchExec();
     logger.info("Validating configuration...");
 
     return fileUtils
       .readPackage()
       .then(dryRunner.validatePackage)
-      .then(dryRunner.patchFileSystem);
+      .then(dryRunner.validateFiles)
+      .then((result) => {
+        dryRunner.patchFileSystem(result.json, result.files);
+
+        return Promise.resolve();
+      });
   },
 
-  dryExec(filePath, cb) {
-    cb();
+  exec: {
+    original: childProcess.exec,
+    patch(cmd, cb) {
+      cb();
+    }
   },
 
-  patchFileSystem(packageJSON) {
-    const files = packageJSON.publishr.files || {};
-    const fileSystem = Object.keys(files).reduce((result, file) => {
-      result[files[file]] = `${files[file]} contents`;
+  patchExec() {
+    childProcess.exec = dryRunner.exec.patch;
+  },
+
+  patchFileSystem(packageJSON, files) {
+    const fileSystem = files.reduce((result, filePath) => {
+      result[filePath] = `${filePath} contents`;
 
       return result;
     }, {
@@ -43,8 +54,6 @@ const dryRunner = {
     });
 
     mockfs(fileSystem);
-
-    return Promise.resolve();
   },
 
   postpublish() {
@@ -59,10 +68,12 @@ const dryRunner = {
     return postversion.run();
   },
 
+  restoreExec() {
+    childProcess.exec = dryRunner.exec.original;
+  },
+
   restoreFileSystem() {
     mockfs.restore();
-
-    return Promise.resolve();
   },
 
   run() {
@@ -71,6 +82,34 @@ const dryRunner = {
       .then(dryRunner.postversion)
       .then(dryRunner.postpublish)
       .then(dryRunner.afterDryRun);
+  },
+
+  validateFiles(packageJSON) {
+    const filePaths = packageJSON.publishr.files || {};
+
+    return Promise.all(Object.keys(filePaths).map((filePath) => {
+      return new Promise((resolve, reject) => {
+        const oldPath = filePaths[filePath];
+
+        fs.stat(oldPath, (err) => {
+          if (err) {
+            logger.error(`validate '${oldPath}'`, err);
+
+            return reject(err);
+          }
+
+          logger.success(`validate '${oldPath}'`);
+
+          return resolve(oldPath);
+        });
+      });
+    })).then((validFiles) => {
+
+      return Promise.resolve({
+        files: validFiles,
+        json: packageJSON
+      });
+    });
   },
 
   validatePackage(packageJSON) {
@@ -83,12 +122,12 @@ const dryRunner = {
     }
 
     if (err) {
-      logger.error("validate package.json", err);
+      logger.error("validate 'package.json'", err);
 
       return Promise.reject(err);
     }
 
-    logger.success("validate package.json");
+    logger.success("validate 'package.json'");
 
     return Promise.resolve(packageJSON);
   }

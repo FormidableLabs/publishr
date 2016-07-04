@@ -145,7 +145,7 @@ describe("fileHandler", () => {
       });
     });
 
-     it("should handle no publishr config", () => {
+    it("should handle no publishr config", () => {
       const handler = (files) => Promise.resolve(files);
 
       sandbox.stub(fileUtils, "statFiles", handler);

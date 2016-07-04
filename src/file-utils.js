@@ -9,12 +9,12 @@ const fileUtils = {
     return new Promise((resolve, reject) => {
       childProcess.exec(`git checkout ${filePath}`, (err, stdout) => {
         if (err) {
-          logger.error(`checkout ${filePath}`, err);
+          logger.error(`checkout '${filePath}'`, err);
 
           return reject(err);
         }
 
-        logger.success(`checkout ${filePath}`);
+        logger.success(`checkout '${filePath}'`);
 
         return resolve(stdout);
       });
@@ -25,12 +25,12 @@ const fileUtils = {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, "utf8", (err, contents) => {
         if (err) {
-          logger.error(`read ${filePath}`, err);
+          logger.error(`read '${filePath}'`, err);
 
           return reject(err);
         }
 
-        logger.success(`read ${filePath}`);
+        logger.success(`read '${filePath}'`);
 
         return resolve(contents);
       });
@@ -57,12 +57,12 @@ const fileUtils = {
     return new Promise((resolve, reject) => {
       fs.unlink(filePath, (err) => {
         if (err) {
-          logger.error(`remove ${filePath}`, err);
+          logger.error(`remove '${filePath}'`, err);
 
           return reject(err);
         }
 
-        logger.success(`remove ${filePath}`);
+        logger.success(`remove '${filePath}'`);
 
         return resolve();
       });
@@ -91,12 +91,12 @@ const fileUtils = {
     return new Promise((resolve, reject) => {
       fs.writeFile(filePath, contents, "utf8", (err) => {
         if (err) {
-          logger.error(`write ${filePath}`, err);
+          logger.error(`write '${filePath}'`, err);
 
           return reject(err);
         }
 
-        logger.success(`write ${filePath}`);
+        logger.success(`write '${filePath}'`);
 
         return resolve();
       });

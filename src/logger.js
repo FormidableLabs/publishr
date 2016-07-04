@@ -3,7 +3,15 @@ import logSymbols from "log-symbols";
 
 
 const logger = {
-  silent: true,
+  enabled: false,
+
+  disable() {
+    logger.enabled = false;
+  },
+
+  enable() {
+    logger.enabled = true;
+  },
 
   error(message, err) {
     logger.log(`${logSymbols.error}  ${chalk.gray(message)}`);
@@ -18,11 +26,9 @@ const logger = {
   },
 
   log(...args) {
-    if (logger.silent) {
-      return;
+    if (logger.enabled) {
+      console.log(...args); // eslint-disable-line no-console
     }
-
-    console.log(...args); // eslint-disable-line no-console
   },
 
   success(message) {

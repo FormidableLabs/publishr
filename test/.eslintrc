@@ -3,3 +3,6 @@
   "mocha": true
 "globals":
   "expect": true
+"rules":
+  "max-nested-callbacks": 0
+  "max-params": 0
