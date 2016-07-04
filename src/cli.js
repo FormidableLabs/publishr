@@ -11,9 +11,7 @@ const main = (cmd) => {
   } else if (cmd === "postversion") {
     postversion.run();
   } else if (cmd === "dry-run") {
-    dryRunner.run().catch((err) => {
-      process.exit(1);
-    });
+    dryRunner.run();
   } else {
     throw new Error(`Unknown command ${cmd}`);
   }
