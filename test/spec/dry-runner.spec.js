@@ -1,7 +1,7 @@
-import childProcess from "child_process";
 import dryRunner from "dry-runner";
 import {Promise} from "es6-promise";
 import fileUtils from "file-utils";
+import git from "git";
 import logger from "logger";
 import mockfs from "mock-fs";
 import postpublish from "postpublish";
@@ -23,12 +23,12 @@ describe("dryRunner", () => {
 
   describe("afterDryRun", () => {
     it("should tear down after the dry run", () => {
-      sandbox.stub(dryRunner, "restoreExec");
       sandbox.stub(dryRunner, "restoreFileSystem");
+      sandbox.stub(git, "disableDry");
       sandbox.stub(logger, "disable");
 
       return dryRunner.afterDryRun().then(() => {
-        expect(dryRunner.restoreExec).to.have.callCount(1);
+        expect(git.disableDry).to.have.callCount(1);
         expect(dryRunner.restoreFileSystem).to.have.callCount(1);
         expect(logger.disable).to.have.callCount(1);
       });
@@ -37,17 +37,17 @@ describe("dryRunner", () => {
 
   describe("beforeDryRun", () => {
     it("should set up before the dry run", () => {
-      sandbox.stub(dryRunner, "patchExec");
       sandbox.stub(dryRunner, "patchFileSystem", () => Promise.resolve());
       sandbox.stub(dryRunner, "validateFiles", (json) => {
         return Promise.resolve({files: "mock files", json});
       });
       sandbox.stub(dryRunner, "validatePackage", (json) => Promise.resolve(json));
       sandbox.stub(fileUtils, "readPackage", () => Promise.resolve("mock json"));
+      sandbox.stub(git, "enableDry");
       sandbox.stub(logger, "enable");
 
       return dryRunner.beforeDryRun().then(() => {
-        expect(dryRunner.patchExec).to.have.callCount(1);
+        expect(git.enableDry).to.have.callCount(1);
         expect(dryRunner.patchFileSystem)
           .to.have.callCount(1).and
           .to.have.been.calledWith("mock json", "mock files");
@@ -59,32 +59,6 @@ describe("dryRunner", () => {
           .to.have.been.calledWith("mock json");
         expect(logger.enable).to.have.callCount(1);
       });
-    });
-  });
-
-  describe("patchExec", () => {
-    it("should handle an exec patch", () => {
-      const original = sandbox.stub(childProcess, "exec");
-      const patch = sandbox.stub(dryRunner.exec, "patch");
-
-      dryRunner.patchExec();
-      childProcess.exec();
-      expect(patch).to.have.callCount(1);
-      expect(original).to.have.callCount(0);
-    });
-
-    it("should call the patched exec callback", () => {
-      const cb = sandbox.stub();
-
-      dryRunner.exec.patch("mock cmd", cb);
-      expect(cb).to.have.callCount(1);
-    });
-
-    it("should handle an exec restore", () => {
-      dryRunner.patchExec();
-      expect(childProcess.exec).to.equal(dryRunner.exec.patch);
-      dryRunner.restoreExec();
-      expect(childProcess.exec).to.equal(dryRunner.exec.original);
     });
   });
 
@@ -135,10 +109,17 @@ describe("dryRunner", () => {
         }
       };
 
-      dryRunner.patchFileSystem(packageJSON, [
-        ".npmignore.publishr",
-        ".babelrc.publishr"
-      ]);
+      dryRunner.patchFileSystem(packageJSON, [{
+        path: ".npmignore.publishr",
+        stats: {
+          mode: parseInt("0777", 8)
+        }
+      }, {
+        path: ".babelrc.publishr",
+        stats: {
+          mode: parseInt("0777", 8)
+        }
+      }]);
 
       return Promise.all([
         fileUtils.readFile("package.json"),
@@ -148,6 +129,25 @@ describe("dryRunner", () => {
         expect(fileContents[0]).to.equal(JSON.stringify(packageJSON, null, 2));
         expect(fileContents[1]).to.equal(".npmignore.publishr contents");
         expect(fileContents[2]).to.equal(".babelrc.publishr contents");
+      });
+    });
+
+    it("should patch the file system with existing read permissions", () => {
+      const packageJSON = {
+        dependencies: {
+          lodash: "1.0.0"
+        }
+      };
+
+      dryRunner.patchFileSystem(packageJSON, [{
+        path: ".npmignore.publishr",
+        stats: {
+          mode: 0
+        }
+      }]);
+
+      return fileUtils.readFile(".npmignore.publishr").catch((err) => {
+        expect(err).to.have.property("code", "EACCES");
       });
     });
 
@@ -170,39 +170,28 @@ describe("dryRunner", () => {
         }
       };
 
-      sandbox.stub(logger, "success");
+      sandbox.stub(dryRunner, "validateFileRead", (filePath) => Promise.resolve({
+        path: filePath,
+        stats: "mock stats"
+      }));
+      sandbox.stub(dryRunner, "validateFileWrite", () => Promise.resolve());
 
       mockfs({
         ".babelrc.publishr": "mock contents",
         ".npmignore.publishr": "mock contents"
       });
 
-      return dryRunner.validateFiles(packageJSON).then(() => {
-        expect(logger.success)
-          .to.have.callCount(2).and
-          .to.have.been.calledWith("validate '.babelrc.publishr'").and
-          .to.have.been.calledWith("validate '.npmignore.publishr'");
-      });
-    });
-
-    it("should invalidate when a file does not exist", () => {
-      const packageJSON = {
-        publishr: {
-          files: {
-            ".npmignore": ".npmignore.publishr"
-          }
-        }
-      };
-
-      sandbox.stub(logger, "error");
-
-      mockfs({});
-
-      return dryRunner.validateFiles(packageJSON).catch((err) => {
-        expect(err).to.have.property("code", "ENOENT");
-        expect(logger.error)
-          .to.have.callCount(1).and
-          .to.have.been.calledWith("validate '.npmignore.publishr'", err);
+      return dryRunner.validateFiles(packageJSON).then((result) => {
+        expect(result).to.deep.equal({
+          files: [{
+            path: ".babelrc.publishr",
+            stats: "mock stats"
+          }, {
+            path: ".npmignore.publishr",
+            stats: "mock stats"
+          }],
+          json: packageJSON
+        });
       });
     });
 
@@ -213,14 +202,64 @@ describe("dryRunner", () => {
         }
       };
 
-      sandbox.stub(logger, "error");
-      sandbox.stub(logger, "success");
+      sandbox.stub(dryRunner, "validateFileRead");
+      sandbox.stub(dryRunner, "validateFileWrite");
 
       mockfs({});
 
       return dryRunner.validateFiles(packageJSON).then(() => {
-        expect(logger.error).to.have.callCount(0);
-        expect(logger.success).to.have.callCount(0);
+        expect(dryRunner.validateFileRead).to.have.callCount(0);
+        expect(dryRunner.validateFileRead).to.have.callCount(0);
+      });
+    });
+  });
+
+  describe("validateFileRead", () => {
+    it("should validate a file read", () => {
+      sandbox.stub(fileUtils, "statFile", () => Promise.resolve("mock stats"));
+
+      return dryRunner.validateFileRead(".npmignore.publishr").then((result) => {
+        expect(result).to.deep.equal({
+          path: ".npmignore.publishr",
+          stats: "mock stats"
+        });
+      });
+    });
+
+    it("should invalidate a file read", () => {
+      sandbox.stub(fileUtils, "statFile", () => Promise.reject("mock error"));
+
+      return dryRunner.validateFileRead(".npmignore.publishr").catch((err) => {
+        expect(err).to.equal("mock error");
+      });
+    });
+  });
+
+  describe("validateFileWrite", () => {
+    it("should validate a file write", () => {
+      sandbox.stub(fileUtils, "statFile", () => Promise.resolve("mock stats"));
+
+      return dryRunner.validateFileWrite(".npmignore.publishr").then((result) => {
+        expect(result).to.deep.equal({
+          path: ".npmignore.publishr",
+          stats: "mock stats"
+        });
+      });
+    });
+
+    it("should validate a file write for no file", () => {
+      sandbox.stub(fileUtils, "statFile", () => Promise.reject({code: "ENOENT"}));
+
+      return dryRunner.validateFileWrite(".npmignore.publishr").then((result) => {
+        expect(result).to.equal(undefined);
+      });
+    });
+
+    it("should invalidate a file write", () => {
+      sandbox.stub(fileUtils, "statFile", (filePath) => Promise.reject({code: "EACCES"}));
+
+      return dryRunner.validateFileWrite(".npmignore.publishr").catch((err) => {
+        expect(err).to.have.property("code", "EACCES");
       });
     });
   });

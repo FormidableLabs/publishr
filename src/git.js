@@ -1,9 +1,10 @@
 import {exec} from "child_process";
+import {Promise} from "es6-promise";
 import logger from "./logger";
 
 
 const git = {
-  exec: exec,
+  dry: false,
 
   checkout(filePath) {
     return new Promise((resolve, reject) => {
@@ -21,12 +22,20 @@ const git = {
     });
   },
 
-  disableDryRun() {
-    git.exec = exec;
+  exec(cmd, cb) {
+    if (git.dry) {
+      exec("git status", cb);
+    } else {
+      exec(cmd, cb);
+    }
   },
 
-  enableDryRun(fn) {
-    git.exec = fn;
+  enableDry() {
+    git.dry = true;
+  },
+
+  disableDry() {
+    git.dry = false;
   }
 };
 

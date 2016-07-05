@@ -52,20 +52,32 @@ const fileUtils = {
     });
   },
 
+  statFile(filePath) {
+    return new Promise((resolve, reject) => {
+      fs.stat(filePath, (err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(stats);
+      });
+    });
+  },
+
   statFiles(files) {
     return Promise.all(files.map((file) => {
-      return new Promise((resolve, reject) => {
-        fs.stat(file.newPath, (err) => {
-          if (err && err.code !== "ENOENT") {
-            return reject(err);
-          } else if (!err) {
-            file.created = false;
-          } else {
-            file.created = true;
-          }
+      return fileUtils.statFile(file.newPath).then(() => {
+        file.created = false;
 
-          return resolve(file);
-        });
+        return Promise.resolve(file);
+      }).catch((err) => {
+        if (err.code !== "ENOENT") {
+          return Promise.reject(err);
+        }
+
+        file.created = true;
+
+        return Promise.resolve(file);
       });
     }));
   },

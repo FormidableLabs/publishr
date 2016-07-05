@@ -1,4 +1,3 @@
-import childProcess from "child_process";
 import {Promise} from "es6-promise";
 import fileUtils from "file-utils";
 import mockfs from "mock-fs";
@@ -149,7 +148,7 @@ describe("fileUtils", () => {
           items: {
             "existing-file.js": "mock contents"
           },
-          mode: "0000"
+          mode: 0
         })
       });
 
@@ -204,7 +203,7 @@ describe("fileUtils", () => {
 
       mockfs({
         "file-1.js": mockfs.file({
-          mode: "0000"
+          mode: 0
         })
       });
 
@@ -249,7 +248,7 @@ describe("fileUtils", () => {
     it("should reject on write error", () => {
       mockfs({
         "package.json": mockfs.file({
-          mode: "0000"
+          mode: 0
         })
       });
 

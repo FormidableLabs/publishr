@@ -12,6 +12,7 @@ describe("git", () => {
 
   afterEach(() => {
     sandbox.restore();
+    git.disableDry();
   });
 
   describe("checkout", () => {
@@ -32,8 +33,20 @@ describe("git", () => {
       return git.checkout("checkout.js").catch((err) => {
         expect(childProcess.exec)
           .to.have.callCount(1).and
-          .to.have.been.calledWith("git checkout checkout.js")
+          .to.have.been.calledWith("git checkout checkout.js");
         expect(err).to.equal("mock error");
+      });
+    });
+
+    it("should exec git status while dry", () => {
+      sandbox.stub(childProcess, "exec", (filePath, cb) => cb(null));
+
+      git.enableDry();
+
+      return git.checkout("checkout.js").then(() => {
+        expect(childProcess.exec)
+          .to.have.callCount(1).and
+          .to.have.been.calledWith("git status");
       });
     });
   });

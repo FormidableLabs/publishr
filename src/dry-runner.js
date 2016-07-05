@@ -1,7 +1,5 @@
-import {exec} from "child_process";
 import {Promise} from "es6-promise";
 import fileUtils from "./file-utils";
-import fs from "fs";
 import git from "./git";
 import logger from "./logger";
 import postpublish from "./postpublish";
@@ -13,7 +11,7 @@ let mockfs;
 const dryRunner = {
   afterDryRun() {
     logger.disable();
-    git.disableDryRun();
+    git.disableDry();
     dryRunner.restoreFileSystem();
 
     return Promise.resolve();
@@ -21,7 +19,7 @@ const dryRunner = {
 
   beforeDryRun() {
     logger.enable();
-    git.enableDryRun(dryRunner.validateCheckout);
+    git.enableDry();
     logger.info("Validating configuration...");
 
     return fileUtils
@@ -38,8 +36,11 @@ const dryRunner = {
   patchFileSystem(packageJSON, files) {
     mockfs = require("mock-fs");
 
-    const fileSystem = files.reduce((result, filePath) => {
-      result[filePath] = `${filePath} contents`;
+    const fileSystem = files.reduce((result, file) => {
+      result[file.path] = mockfs.file({
+        content: `${file.path} contents`,
+        mode: file.stats.mode
+      });
 
       return result;
     }, {
@@ -73,47 +74,55 @@ const dryRunner = {
       .then(dryRunner.afterDryRun);
   },
 
-  validateCheckout(cmd, cb) {
-    return new Promise((resolve, reject) => {
-      const filePath = cmd.split(" ").pop();
+  validateFileOperation(filePath) {
+    return fileUtils.statFile(filePath).then((stats) => {
+      logger.success(`validate ${filePath}`);
 
-      exec(`git status ${filePath}`, (err, stdout, stderr) => {
-        if (err) {
-          return cb(err, stdout, stderr);
-        }
-
-        console.log(stdout);
-
-        cb(err, stdout, stderr);
+      return Promise.resolve({
+        path: filePath,
+        stats
       });
     });
   },
 
+  validateFileRead(filePath) {
+    return dryRunner.validateFileOperation(filePath).catch((err) => {
+      logger.error(`validate ${filePath}`, err);
+
+      return Promise.reject(err);
+    });
+  },
+
   validateFiles(packageJSON) {
-    const filePaths = packageJSON.publishr.files || {};
+    const files = packageJSON.publishr.files || {};
+    const filePaths = Object.keys(files);
+    const fileReads = filePaths.map((filePath) => {
+      return dryRunner.validateFileRead(files[filePath]);
+    });
+    const fileWrites = filePaths.map((filePath) => {
+      return dryRunner.validateFileWrite(filePath);
+    });
+    const fileOperations = [].concat(fileReads, fileWrites);
 
-    return Promise.all(Object.keys(filePaths).map((filePath) => {
-      return new Promise((resolve, reject) => {
-        const oldPath = filePaths[filePath];
-
-        fs.stat(oldPath, (err) => {
-          if (err) {
-            logger.error(`validate '${oldPath}'`, err);
-
-            return reject(err);
-          }
-
-          logger.success(`validate '${oldPath}'`);
-
-          return resolve(oldPath);
-        });
-      });
-    })).then((validFiles) => {
-
+    return Promise.all(fileOperations).then((validFiles) => {
       return Promise.resolve({
-        files: validFiles,
+        files: validFiles.filter((file) => file),
         json: packageJSON
       });
+    });
+  },
+
+  validateFileWrite(filePath) {
+    return dryRunner.validateFileOperation(filePath).catch((err) => {
+      if (err.code !== "ENOENT") {
+        logger.success(`validate ${filePath}`, err);
+
+        return Promise.reject(err);
+      }
+
+      logger.success(`validate ${filePath}`);
+
+      return Promise.resolve();
     });
   },
 
