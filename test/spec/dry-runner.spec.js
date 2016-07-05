@@ -85,7 +85,6 @@ describe("dryRunner", () => {
       expect(postversion.run).to.have.callCount(1);
     });
 
-
     it("should call each dry run step", () => {
       sandbox.stub(dryRunner, "beforeDryRun", () => Promise.resolve());
       sandbox.stub(dryRunner, "postversion", () => Promise.resolve());
