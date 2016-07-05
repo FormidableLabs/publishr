@@ -22,6 +22,10 @@ const git = {
     });
   },
 
+  disableDry() {
+    git.dry = false;
+  },
+
   exec(cmd, cb) {
     if (git.dry) {
       exec("git status", cb);
@@ -32,10 +36,6 @@ const git = {
 
   enableDry() {
     git.dry = true;
-  },
-
-  disableDry() {
-    git.dry = false;
   }
 };
 
