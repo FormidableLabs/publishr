@@ -3,10 +3,11 @@ import {Promise} from "es6-promise";
 import fileUtils from "./file-utils";
 import fs from "fs";
 import logger from "./logger";
-import mockfs from "mock-fs";
 import postpublish from "./postpublish";
 import postversion from "./postversion";
 
+
+let mockfs;
 
 const dryRunner = {
   afterDryRun() {
@@ -45,6 +46,8 @@ const dryRunner = {
   },
 
   patchFileSystem(packageJSON, files) {
+    mockfs = require("mock-fs");
+
     const fileSystem = files.reduce((result, filePath) => {
       result[filePath] = `${filePath} contents`;
 
