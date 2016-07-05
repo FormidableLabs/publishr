@@ -255,7 +255,7 @@ describe("dryRunner", () => {
     });
 
     it("should invalidate a file write", () => {
-      sandbox.stub(fileUtils, "statFile", (filePath) => Promise.reject({code: "EACCES"}));
+      sandbox.stub(fileUtils, "statFile", () => Promise.reject({code: "EACCES"}));
 
       return dryRunner.validateFileWrite(".npmignore.publishr").catch((err) => {
         expect(err).to.have.property("code", "EACCES");
