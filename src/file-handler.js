@@ -1,19 +1,24 @@
 import fileUtils from "./file-utils";
+import git from "./git";
 import packageUtils from "./package-utils";
 
 
 const fileHandler = {
   fixFiles(json) {
-    json._publishr.forEach((file) => {
-      if (file.created) {
-        fileUtils.removeFile(file.path);
-      } else {
-        fileUtils.checkoutFile(file.path);
-      }
-    });
+    json._publishr = json._publishr || [];
+
+    return Promise.all(json._publishr.map((file) => {
+      return file.created ?
+        fileUtils.removeFile(file.path) :
+        git.checkout(file.path);
+    }));
   },
 
   overwriteFiles(json) {
+    json.publishr = json.publishr || {};
+    json.publishr.files = json.publishr.files || {};
+    json.publishr.dependencies = json.publishr.dependencies || [];
+
     const files = Object.keys(json.publishr.files).map((file) => ({
       newPath: file,
       oldPath: json.publishr.files[file]

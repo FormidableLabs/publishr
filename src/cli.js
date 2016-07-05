@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 
+import dryRunner from "./dry-runner";
 import postpublish from "./postpublish";
 import postversion from "./postversion";
 
 
 const main = (cmd) => {
   if (cmd === "postpublish") {
-    postpublish();
+    postpublish.run();
   } else if (cmd === "postversion") {
-    postversion();
+    postversion.run();
+  } else if (cmd === "dry-run") {
+    dryRunner.run();
   } else {
-    throw new Error(`Unknown command: ${cmd}`);
+    throw new Error(`Unknown command ${cmd}`);
   }
 };
 

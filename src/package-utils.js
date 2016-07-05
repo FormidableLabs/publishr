@@ -1,9 +1,10 @@
+import logger from "./logger";
 import objectAssign from "object-assign";
 
 
 const packageUtils = {
   updateDependencies(json) {
-    if (!json.publishr) {
+    if (!json.publishr || !json.publishr.dependencies) {
       return json;
     }
 
@@ -19,6 +20,7 @@ const packageUtils = {
         (key) => regex.test(key)
       ).forEach((key) => {
         json.devDependencies[key] = json.dependencies[key];
+        logger.success(`dependency '${key}'`);
       });
 
       json.dependencies = dependencyKeys.filter(

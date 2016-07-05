@@ -27,7 +27,7 @@ describe("postpublish", () => {
     sandbox.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
     sandbox.stub(fileHandler, "fixFiles");
 
-    return postpublish().then(() => {
+    return postpublish.run().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
       expect(fileHandler.fixFiles)
         .to.have.callCount(1).and

@@ -1,117 +1,123 @@
-import {exec} from "child_process";
 import {Promise} from "es6-promise";
 import fs from "fs";
+import logger from "./logger";
 
 
 const fileUtils = {
-  checkoutFile(filePath) {
+  readFile(filePath) {
     return new Promise((resolve, reject) => {
-      exec(`git checkout ${filePath}`, (err, stdout) => {
+      fs.readFile(filePath, "utf8", (err, contents) => {
         if (err) {
+          logger.error(`read '${filePath}'`, err);
+
           return reject(err);
         }
 
-        return resolve(stdout);
+        logger.success(`read '${filePath}'`);
+
+        return resolve(contents);
       });
     });
   },
 
   readFiles(files) {
     return Promise.all(files.map((file) => {
-      return new Promise((resolve, reject) => {
-        fs.readFile(file.oldPath, "utf8", (err, contents) => {
-          if (err) {
-            return reject(err);
-          }
+      return fileUtils.readFile(file.oldPath).then((contents) => {
+        file.contents = contents;
 
-          file.contents = contents;
-
-          return resolve(file);
-        });
+        return Promise.resolve(file);
       });
     }));
   },
 
   readPackage() {
-    return new Promise((resolve, reject) => {
-      fs.readFile("package.json", "utf8", (readErr, contents) => {
-        if (readErr) {
-          return reject(readErr);
-        }
-
-        try {
-          return resolve(JSON.parse(contents));
-        } catch (parseErr) {
-          return reject(parseErr);
-        }
-      });
-    });
+    return fileUtils
+      .readFile("package.json")
+      .then((contents) => Promise.resolve(JSON.parse(contents)));
   },
 
   removeFile(filePath) {
     return new Promise((resolve, reject) => {
       fs.unlink(filePath, (err) => {
         if (err) {
+          logger.error(`remove '${filePath}'`, err);
+
           return reject(err);
         }
 
+        logger.success(`remove '${filePath}'`);
+
         return resolve();
+      });
+    });
+  },
+
+  statFile(filePath) {
+    return new Promise((resolve, reject) => {
+      fs.stat(filePath, (err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(stats);
       });
     });
   },
 
   statFiles(files) {
     return Promise.all(files.map((file) => {
-      return new Promise((resolve, reject) => {
-        fs.stat(file.newPath, (err) => {
-          if (err && err.code !== "ENOENT") {
-            return reject(err);
-          } else if (!err) {
-            file.created = false;
-          } else {
-            file.created = true;
-          }
+      return fileUtils.statFile(file.newPath).then(() => {
+        file.created = false;
 
-          return resolve(file);
-        });
+        return Promise.resolve(file);
+      }).catch((err) => {
+        if (err.code !== "ENOENT") {
+          return Promise.reject(err);
+        }
+
+        file.created = true;
+
+        return Promise.resolve(file);
       });
     }));
   },
 
+  writeFile(filePath, contents) {
+    return new Promise((resolve, reject) => {
+      fs.writeFile(filePath, contents, "utf8", (err) => {
+        if (err) {
+          logger.error(`write '${filePath}'`, err);
+
+          return reject(err);
+        }
+
+        logger.success(`write '${filePath}'`);
+
+        return resolve();
+      });
+    });
+  },
+
   writeFiles(files) {
     return Promise.all(files.map((file) => {
-      return new Promise((resolve, reject) => {
-        fs.writeFile(file.newPath, file.contents, "utf8", (err) => {
-          if (err) {
-            return reject(err);
-          }
+      return fileUtils.writeFile(file.newPath, file.contents).then(() => {
+        file.written = true;
 
-          file.written = true;
-
-          return resolve(file);
-        });
+        return Promise.resolve(file);
       });
     }));
   },
 
   writePackage(json) {
-    return new Promise((resolve, reject) => {
-      let contents;
+    let contents;
 
-      try {
-        contents = JSON.stringify(json, null, 2);
-      } catch (err) {
-        return reject(err);
-      }
+    try {
+      contents = JSON.stringify(json, null, 2);
+    } catch (err) {
+      return Promise.reject(err);
+    }
 
-      fs.writeFile("package.json", contents, "utf8", (err) => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve();
-      });
-    });
+    return fileUtils.writeFile("package.json", contents);
   }
 };
 

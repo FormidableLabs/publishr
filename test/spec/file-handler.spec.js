@@ -1,6 +1,7 @@
 import {Promise} from "es6-promise";
 import fileUtils from "file-utils";
 import fileHandler from "file-handler";
+import git from "git";
 import packageUtils from "package-utils";
 import sinon from "sinon";
 
@@ -18,7 +19,7 @@ describe("fileHandler", () => {
 
   describe("fixFiles", () => {
     it("should checkout files", () => {
-      sandbox.stub(fileUtils, "checkoutFile");
+      sandbox.stub(git, "checkout");
       sandbox.stub(fileUtils, "removeFile");
 
       fileHandler.fixFiles({
@@ -28,13 +29,13 @@ describe("fileHandler", () => {
         }]
       });
       expect(fileUtils.removeFile).to.have.callCount(0);
-      expect(fileUtils.checkoutFile)
+      expect(git.checkout)
         .to.have.callCount(1).and
         .to.have.been.calledWith("checkout.js");
     });
 
     it("should remove files", () => {
-      sandbox.stub(fileUtils, "checkoutFile");
+      sandbox.stub(git, "checkout");
       sandbox.stub(fileUtils, "removeFile");
 
       fileHandler.fixFiles({
@@ -43,14 +44,14 @@ describe("fileHandler", () => {
           path: "remove.js"
         }]
       });
-      expect(fileUtils.checkoutFile).to.have.callCount(0);
+      expect(git.checkout).to.have.callCount(0);
       expect(fileUtils.removeFile)
         .to.have.callCount(1).and
         .to.have.been.calledWith("remove.js");
     });
 
     it("should handle multiple files", () => {
-      sandbox.stub(fileUtils, "checkoutFile");
+      sandbox.stub(git, "checkout");
       sandbox.stub(fileUtils, "removeFile");
 
       fileHandler.fixFiles({
@@ -68,7 +69,7 @@ describe("fileHandler", () => {
           path: "remove2.js"
         }]
       });
-      expect(fileUtils.checkoutFile)
+      expect(git.checkout)
         .to.have.callCount(2).and
         .to.have.been.calledWith("checkout1.js").and
         .to.have.been.calledWith("checkout2.js");
@@ -76,6 +77,15 @@ describe("fileHandler", () => {
         .to.have.callCount(2).and
         .to.have.been.calledWith("remove1.js").and
         .to.have.been.calledWith("remove2.js");
+    });
+
+    it("should handle no _publishr config", () => {
+      sandbox.stub(git, "checkout");
+      sandbox.stub(fileUtils, "removeFile");
+
+      fileHandler.fixFiles({});
+      expect(git.checkout).to.have.callCount(0);
+      expect(fileUtils.removeFile).to.have.callCount(0);
     });
   });
 
@@ -110,6 +120,7 @@ describe("fileHandler", () => {
         expect(fileHandler.overwritePackage).to.have.callCount(1);
         expect(json).to.deep.equal({
           publishr: {
+            dependencies: [],
             files: {
               "first.js": "first.js.publishr",
               "second.js": "second.js.publishr"
@@ -132,6 +143,30 @@ describe("fileHandler", () => {
         }
       }).catch((err) => {
         expect(err).to.equal(mockErr);
+      });
+    });
+
+    it("should handle no publishr config", () => {
+      const handler = (files) => Promise.resolve(files);
+
+      sandbox.stub(fileUtils, "statFiles", handler);
+      sandbox.stub(fileUtils, "readFiles", handler);
+      sandbox.stub(fileUtils, "writeFiles", handler);
+      sandbox.stub(fileHandler, "overwritePackage", handler);
+
+      return fileHandler.overwriteFiles({}).then((json) => {
+        expect(fileUtils.statFiles)
+          .to.have.callCount(1).and
+          .to.have.been.calledWith([]);
+        expect(fileUtils.readFiles).to.have.callCount(1);
+        expect(fileUtils.writeFiles).to.have.callCount(1);
+        expect(fileHandler.overwritePackage).to.have.callCount(1);
+        expect(json).to.deep.equal({
+          publishr: {
+            dependencies: [],
+            files: {}
+          }
+        });
       });
     });
   });

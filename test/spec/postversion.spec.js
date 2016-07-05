@@ -23,7 +23,7 @@ describe("postversion", () => {
     sandbox.stub(fileHandler, "overwriteFiles", () => Promise.resolve(files));
     sandbox.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
 
-    return postversion().then(() => {
+    return postversion.run().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
       expect(fileHandler.overwriteFiles)
         .to.have.callCount(1).and
