@@ -18,24 +18,6 @@ describe("fileUtils", () => {
     sandbox.restore();
   });
 
-  describe("checkoutFile", () => {
-    it("should exec git checkout on file", () => {
-      sandbox.stub(childProcess, "exec", (filePath, cb) => cb(null, "mock stdout"));
-
-      return fileUtils.checkoutFile("checkout.js").then((stdout) => {
-        expect(stdout).to.equal("mock stdout");
-      });
-    });
-
-    it("should reject on an error", () => {
-      sandbox.stub(childProcess, "exec", (filePath, cb) => cb("mock error"));
-
-      return fileUtils.checkoutFile("checkout.js").catch((err) => {
-        expect(err).to.equal("mock error");
-      });
-    });
-  });
-
   describe("readFiles", () => {
     it("should append contents to files", () => {
       const files = [{

@@ -1,4 +1,5 @@
 import fileUtils from "./file-utils";
+import git from "./git";
 import packageUtils from "./package-utils";
 
 
@@ -9,7 +10,7 @@ const fileHandler = {
     return Promise.all(json._publishr.map((file) => {
       return file.created ?
         fileUtils.removeFile(file.path) :
-        fileUtils.checkoutFile(file.path);
+        git.checkout(file.path);
     }));
   },
 

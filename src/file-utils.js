@@ -1,26 +1,9 @@
-import {exec} from "child_process";
 import {Promise} from "es6-promise";
 import fs from "fs";
 import logger from "./logger";
 
 
 const fileUtils = {
-  checkoutFile(filePath) {
-    return new Promise((resolve, reject) => {
-      exec(`git checkout ${filePath}`, (err, stdout) => {
-        if (err) {
-          logger.error(`checkout '${filePath}'`, err);
-
-          return reject(err);
-        }
-
-        logger.success(`checkout '${filePath}'`);
-
-        return resolve(stdout);
-      });
-    });
-  },
-
   readFile(filePath) {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, "utf8", (err, contents) => {

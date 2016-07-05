@@ -1,7 +1,8 @@
-import childProcess from "child_process";
+import {exec} from "child_process";
 import {Promise} from "es6-promise";
 import fileUtils from "./file-utils";
 import fs from "fs";
+import git from "./git";
 import logger from "./logger";
 import postpublish from "./postpublish";
 import postversion from "./postversion";
@@ -12,7 +13,7 @@ let mockfs;
 const dryRunner = {
   afterDryRun() {
     logger.disable();
-    dryRunner.restoreExec();
+    git.disableDryRun();
     dryRunner.restoreFileSystem();
 
     return Promise.resolve();
@@ -20,7 +21,7 @@ const dryRunner = {
 
   beforeDryRun() {
     logger.enable();
-    dryRunner.patchExec();
+    git.enableDryRun(dryRunner.validateCheckout);
     logger.info("Validating configuration...");
 
     return fileUtils
@@ -32,17 +33,6 @@ const dryRunner = {
 
         return Promise.resolve();
       });
-  },
-
-  exec: {
-    original: childProcess.exec,
-    patch(cmd, cb) {
-      cb();
-    }
-  },
-
-  patchExec() {
-    childProcess.exec = dryRunner.exec.patch;
   },
 
   patchFileSystem(packageJSON, files) {
@@ -71,10 +61,6 @@ const dryRunner = {
     return postversion.run();
   },
 
-  restoreExec() {
-    childProcess.exec = dryRunner.exec.original;
-  },
-
   restoreFileSystem() {
     mockfs.restore();
   },
@@ -85,6 +71,22 @@ const dryRunner = {
       .then(dryRunner.postversion)
       .then(dryRunner.postpublish)
       .then(dryRunner.afterDryRun);
+  },
+
+  validateCheckout(cmd, cb) {
+    return new Promise((resolve, reject) => {
+      const filePath = cmd.split(" ").pop();
+
+      exec(`git status ${filePath}`, (err, stdout, stderr) => {
+        if (err) {
+          return cb(err, stdout, stderr);
+        }
+
+        console.log(stdout);
+
+        cb(err, stdout, stderr);
+      });
+    });
   },
 
   validateFiles(packageJSON) {
