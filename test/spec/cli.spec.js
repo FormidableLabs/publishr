@@ -1,6 +1,7 @@
 import args from "args";
 import cli from "cli";
 import dryRunner from "dry-runner";
+import {Promise} from "es6-promise";
 import logger from "logger";
 import postpublish from "postpublish";
 import postversion from "postversion";
@@ -25,6 +26,7 @@ describe("cli", () => {
   });
 
   it("should run postpublish", () => {
+    postpublish.run.returns(Promise.resolve());
     args.init.returns({
       argv: {
         _: ["postpublish"]
@@ -38,6 +40,7 @@ describe("cli", () => {
   });
 
   it("should run postversion", () => {
+    postversion.run.returns(Promise.resolve());
     args.init.returns({
       argv: {
         _: ["postversion"]
@@ -51,6 +54,7 @@ describe("cli", () => {
   });
 
   it("should run dry-run", () => {
+    dryRunner.run.returns(Promise.resolve());
     args.init.returns({
       argv: {
         _: ["dry-run"]

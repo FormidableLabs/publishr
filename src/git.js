@@ -10,12 +10,12 @@ const git = {
     return new Promise((resolve, reject) => {
       git.exec(`git checkout ${filePath}`, (err, stdout) => {
         if (err) {
-          logger.error(`checkout '${filePath}'`, err);
+          logger.fail(`checkout '${filePath}'`, err);
 
           return reject(err);
         }
 
-        logger.success(`checkout '${filePath}'`);
+        logger.pass(`checkout '${filePath}'`);
 
         return resolve(stdout);
       });

@@ -76,7 +76,7 @@ const dryRunner = {
 
   validateFileOperation(filePath) {
     return fileUtils.statFile(filePath).then((stats) => {
-      logger.success(`validate ${filePath}`);
+      logger.pass(`validate ${filePath}`);
 
       return Promise.resolve({
         path: filePath,
@@ -87,7 +87,7 @@ const dryRunner = {
 
   validateFileRead(filePath) {
     return dryRunner.validateFileOperation(filePath).catch((err) => {
-      logger.error(`validate ${filePath}`, err);
+      logger.fail(`validate ${filePath}`, err);
 
       return Promise.reject(err);
     });
@@ -115,12 +115,12 @@ const dryRunner = {
   validateFileWrite(filePath) {
     return dryRunner.validateFileOperation(filePath).catch((err) => {
       if (err.code !== "ENOENT") {
-        logger.success(`validate ${filePath}`, err);
+        logger.pass(`validate ${filePath}`, err);
 
         return Promise.reject(err);
       }
 
-      logger.success(`validate ${filePath}`);
+      logger.pass(`validate ${filePath}`);
 
       return Promise.resolve();
     });
@@ -136,12 +136,12 @@ const dryRunner = {
     }
 
     if (err) {
-      logger.error("validate 'package.json'", err);
+      logger.fail("validate 'package.json'", err);
 
       return Promise.reject(err);
     }
 
-    logger.success("validate 'package.json'");
+    logger.pass("validate 'package.json'");
 
     return Promise.resolve(packageJSON);
   }

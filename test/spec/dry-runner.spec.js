@@ -271,10 +271,10 @@ describe("dryRunner", () => {
         }
       };
 
-      sandbox.stub(logger, "success");
+      sandbox.stub(logger, "pass");
 
       return dryRunner.validatePackage(packageJSON).then((result) => {
-        expect(logger.success)
+        expect(logger.pass)
           .to.have.callCount(1).and
           .to.have.been.calledWith("validate 'package.json'");
         expect(result).to.equal(packageJSON);
@@ -284,10 +284,10 @@ describe("dryRunner", () => {
     it("should invalidate a package without a publishr config", () => {
       const packageJSON = {};
 
-      sandbox.stub(logger, "error");
+      sandbox.stub(logger, "fail");
 
       return dryRunner.validatePackage(packageJSON).catch((err) => {
-        expect(logger.error)
+        expect(logger.fail)
           .to.have.callCount(1).and
           .to.have.been.calledWith("validate 'package.json'", err);
 
@@ -306,10 +306,10 @@ describe("dryRunner", () => {
         }
       };
 
-      sandbox.stub(logger, "error");
+      sandbox.stub(logger, "fail");
 
       return dryRunner.validatePackage(packageJSON).catch((err) => {
-        expect(logger.error)
+        expect(logger.fail)
           .to.have.callCount(1).and
           .to.have.been.calledWith("validate 'package.json'", err);
         expect(err).to.have.property(

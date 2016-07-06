@@ -2,6 +2,7 @@
 
 import args from "./args";
 import dryRunner from "./dry-runner";
+import errorHandler from "./error-handler";
 import logger from "./logger";
 import postpublish from "./postpublish";
 import postversion from "./postversion";
@@ -16,11 +17,11 @@ const main = () => {
   }
 
   if (cmd === "postversion") {
-    postversion.run();
+    postversion.run().catch(errorHandler.onError);
   } else if (cmd === "postpublish") {
-    postpublish.run();
+    postpublish.run().catch(errorHandler.onError);
   } else if (cmd === "dry-run") {
-    dryRunner.run();
+    dryRunner.run().catch(errorHandler.onError);
   } else {
     args.showHelp();
   }

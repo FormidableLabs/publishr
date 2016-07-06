@@ -15,29 +15,29 @@ describe("logger", () => {
     sandbox.restore();
   });
 
-  it("should log an error message with an error", () => {
+  it("should log an fail message with an error", () => {
     sandbox.stub(logger, "log");
 
-    logger.error("mock message", {message: "mock error message"});
+    logger.fail("mock message", {message: "mock error message"});
     expect(logger.log)
       .to.have.callCount(2).and
       .to.have.been.calledWith(`${logSymbols.error}  ${chalk.gray("mock message")}`).and
       .to.have.been.calledWith(chalk.red("mock error message"));
   });
 
-  it("should log an error message without an error", () => {
+  it("should log a fail message without an error", () => {
     sandbox.stub(logger, "log");
 
-    logger.error("mock message");
+    logger.fail("mock message");
     expect(logger.log)
       .to.have.callCount(1).and
       .to.have.been.calledWith(`${logSymbols.error}  ${chalk.gray("mock message")}`);
   });
 
-  it("should log success", () => {
+  it("should log pass", () => {
     sandbox.stub(logger, "log");
 
-    logger.success("mock message");
+    logger.pass("mock message");
     expect(logger.log)
       .to.have.callCount(1).and
       .to.have.been.calledWith(`${logSymbols.success}  ${chalk.gray("mock message")}`);
@@ -71,5 +71,13 @@ describe("logger", () => {
     expect(console.log).to.have.callCount(0); // eslint-disable-line no-console
 
     logger.disable();
+  });
+
+  it("should always call log on error", () => {
+    sandbox.stub(console, "log");
+
+    logger.disable();
+    logger.error("mock error");
+    expect(console.log).to.have.callCount(1); // eslint-disable-line no-console
   });
 });
