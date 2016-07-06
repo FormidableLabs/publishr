@@ -74,10 +74,10 @@ describe("logger", () => {
   });
 
   it("should always call log on error", () => {
-    sandbox.stub(console, "log");
+    sandbox.stub(console, "error");
 
     logger.disable();
     logger.error("mock error");
-    expect(console.log).to.have.callCount(1); // eslint-disable-line no-console
+    expect(console.error).to.have.callCount(1); // eslint-disable-line no-console
   });
 });
