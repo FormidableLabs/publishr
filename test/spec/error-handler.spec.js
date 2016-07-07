@@ -17,11 +17,11 @@ describe("errorHandler", () => {
     sandbox.restore();
   });
 
-  describe("defaultError", () => {
+  describe("onError", () => {
     it("should handle an error with a stack", () => {
       const err = {stack: "mock stack"};
 
-      errorHandler.defaultError(err);
+      errorHandler.onError(err);
       expect(logger.error)
         .to.have.callCount(1).and
         .to.have.been.calledWith("mock stack\n");
@@ -32,7 +32,7 @@ describe("errorHandler", () => {
 
       sandbox.stub(err, "toString", () => "mock error");
 
-      errorHandler.defaultError(err);
+      errorHandler.onError(err);
       expect(logger.enable).to.have.callCount(1);
       expect(logger.error)
         .to.have.callCount(1).and
@@ -43,10 +43,10 @@ describe("errorHandler", () => {
 
   describe("dryRunnerError", () => {
     it("should handle a dry-run error", () => {
-      sandbox.stub(errorHandler, "defaultError");
+      sandbox.stub(errorHandler, "onError");
 
       errorHandler.dryRunnerError("mock error");
-      expect(errorHandler.defaultError)
+      expect(errorHandler.onError)
         .to.have.callCount(1).and
         .to.have.been.calledWith("mock error");
       expect(logger.info).to.have.callCount(1);
@@ -55,10 +55,10 @@ describe("errorHandler", () => {
 
   describe("postpublishError", () => {
     it("should handle a postpublish error", () => {
-      sandbox.stub(errorHandler, "postScriptError");
+      sandbox.stub(errorHandler, "scriptError");
 
       errorHandler.postpublishError("mock error");
-      expect(errorHandler.postScriptError)
+      expect(errorHandler.scriptError)
         .to.have.callCount(1).and
         .to.have.been.calledWith("mock error", "postpublish");
     });
@@ -66,21 +66,21 @@ describe("errorHandler", () => {
 
   describe("postversionError", () => {
     it("should handle a postversion error", () => {
-      sandbox.stub(errorHandler, "postScriptError");
+      sandbox.stub(errorHandler, "scriptError");
 
       errorHandler.postversionError("mock error");
-      expect(errorHandler.postScriptError)
+      expect(errorHandler.scriptError)
         .to.have.callCount(1).and
         .to.have.been.calledWith("mock error", "postversion");
     });
   });
 
-  describe("postScriptError", () => {
-    it("should handle a post script error", () => {
-      sandbox.stub(errorHandler, "defaultError");
+  describe("scriptError", () => {
+    it("should handle a script error", () => {
+      sandbox.stub(errorHandler, "onError");
 
-      errorHandler.postScriptError("mock error");
-      expect(errorHandler.defaultError)
+      errorHandler.scriptError("mock error");
+      expect(errorHandler.onError)
         .to.have.callCount(1).and
         .to.have.been.calledWith("mock error");
       expect(logger.info).to.have.callCount(1);

@@ -2,13 +2,13 @@ import logger from "./logger";
 
 
 const errorHandler = {
-  defaultError(err) {
+  onError(err) {
     logger.enable();
     logger.error(`${err.stack || err.toString()}\n`);
   },
 
   dryRunnerError(err) {
-    errorHandler.defaultError(err);
+    errorHandler.onError(err);
 
     logger.info([
       "Something unexpected happened during 'dry-run'.",
@@ -17,15 +17,15 @@ const errorHandler = {
   },
 
   postpublishError(err) {
-    errorHandler.postScriptError(err, "postpublish");
+    errorHandler.scriptError(err, "postpublish");
   },
 
   postversionError(err) {
-    errorHandler.postScriptError(err, "postversion");
+    errorHandler.scriptError(err, "postversion");
   },
 
-  postScriptError(err, script) {
-    errorHandler.defaultError(err);
+  scriptError(err, script) {
+    errorHandler.onError(err);
 
     logger.info([
       `Something unexpected happened during '${script}'.`,
