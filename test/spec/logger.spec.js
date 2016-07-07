@@ -49,7 +49,7 @@ describe("logger", () => {
     logger.info("mock message");
     expect(logger.log)
       .to.have.callCount(1).and
-      .to.have.been.calledWith(chalk.white("mock message"));
+      .to.have.been.calledWith("mock message");
   });
 
   it("should log when enabled", () => {
@@ -73,11 +73,24 @@ describe("logger", () => {
     logger.disable();
   });
 
-  it("should always call log on error", () => {
+  it("should error when enabled", () => {
     sandbox.stub(console, "error");
 
+    logger.enable();
+    logger.error("mock message");
+    expect(console.error) // eslint-disable-line no-console
+      .to.have.callCount(1).and
+      .to.have.been.calledWith(chalk.red("mock message"));
+
     logger.disable();
-    logger.error("mock error");
-    expect(console.error).to.have.callCount(1); // eslint-disable-line no-console
+  });
+
+  it("should not error when disabled", () => {
+    sandbox.stub(console, "error");
+
+    logger.error("mock message");
+    expect(console.error).to.have.callCount(0); // eslint-disable-line no-console
+
+    logger.disable();
   });
 });

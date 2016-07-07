@@ -14,7 +14,9 @@ const logger = {
   },
 
   error(message) {
-    console.error(chalk.red(message)); // eslint-disable-line no-console
+    if (logger.enabled) {
+      console.error(chalk.red(message)); // eslint-disable-line no-console
+    }
   },
 
   fail(message, err) {
@@ -26,7 +28,7 @@ const logger = {
   },
 
   info(message) {
-    logger.log(chalk.white(message));
+    logger.log(message);
   },
 
   log(...args) {

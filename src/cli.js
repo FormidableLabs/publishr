@@ -17,11 +17,11 @@ const main = () => {
   }
 
   if (cmd === "postversion") {
-    postversion.run().catch(errorHandler.onError);
+    postversion.run().catch(errorHandler.postversionError);
   } else if (cmd === "postpublish") {
-    postpublish.run().catch(errorHandler.onError);
+    postpublish.run().catch(errorHandler.postpublishError);
   } else if (cmd === "dry-run") {
-    dryRunner.run().catch(errorHandler.onError);
+    dryRunner.run().catch(errorHandler.dryRunnerError);
   } else {
     args.showHelp();
   }
