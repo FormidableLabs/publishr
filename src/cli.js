@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import args from "./args";
 import dryRunner from "./dry-runner";
 import errorHandler from "./error-handler";
@@ -8,7 +6,7 @@ import postpublish from "./postpublish";
 import postversion from "./postversion";
 
 
-const main = () => {
+const cli = () => {
   const argv = args.init().argv;
   const cmd = argv._[0];
 
@@ -27,9 +25,4 @@ const main = () => {
   }
 };
 
-/* istanbul ignore if */
-if (require.main === module) {
-  main();
-}
-
-export default main;
+export default cli;

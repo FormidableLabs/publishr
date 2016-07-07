@@ -3,18 +3,18 @@
   "version": "0.0.22",
   "description": "A tool for harmonious publishing of git and npm packages.",
   "bin": {
-    "publishr": "lib/cli.js"
+    "publishr": "bin/publishr.js"
   },
   "scripts": {
     "build": "rimraf lib && babel src/ -d lib/",
     "check-coverage": "babel-istanbul check-coverage",
     "cover": "rimraf coverage && NODE_PATH=src babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha -- --require test/main.js --recursive test",
-    "dry-run": "node lib/cli.js dry-run",
-    "lint": "eslint src test",
+    "dry-run": "node bin/publishr.js dry-run",
+    "lint": "eslint bin src test",
     "test": "npm run lint && npm run cover && npm run check-coverage",
-    "preinstall": "cd lib || npm run build",
-    "postpublish": "node lib/cli.js postpublish",
-    "postversion": "npm run build && node lib/cli.js postversion",
+    "postinstall": "cd lib || npm run build",
+    "postpublish": "node bin/publishr.js postpublish",
+    "postversion": "npm run build && node bin/publishr.js postversion",
     "unit": "NODE_PATH=src babel-node node_modules/.bin/_mocha --require test/main.js --recursive test"
   },
   "repository": {
