@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 
-require("../lib/cli").cli();
+require("../lib/cli").default();
