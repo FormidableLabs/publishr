@@ -15,12 +15,12 @@ describe("args", () => {
   });
 
   it("should call various yargs commands", () => {
-    sandbox.stub(yargs, "alias", () => yargs);
-    sandbox.stub(yargs, "command", () => yargs);
-    sandbox.stub(yargs, "help", () => yargs);
-    sandbox.stub(yargs, "option", () => yargs);
-    sandbox.stub(yargs, "usage", () => yargs);
-    sandbox.stub(yargs, "version", () => yargs);
+    sandbox.stub(yargs, "alias").returns(yargs);
+    sandbox.stub(yargs, "command").returns(yargs);
+    sandbox.stub(yargs, "help").returns(yargs);
+    sandbox.stub(yargs, "option").returns(yargs);
+    sandbox.stub(yargs, "usage").returns(yargs);
+    sandbox.stub(yargs, "version").returns(yargs);
 
     args.init();
     expect(yargs.alias)

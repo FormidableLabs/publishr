@@ -37,12 +37,12 @@ describe("dryRunner", () => {
 
   describe("beforeDryRun", () => {
     it("should set up before the dry run", () => {
-      sandbox.stub(dryRunner, "patchFileSystem", () => Promise.resolve());
+      sandbox.stub(dryRunner, "patchFileSystem").returns(Promise.resolve());
       sandbox.stub(dryRunner, "validateFiles", (json) => {
         return Promise.resolve({files: "mock files", json});
       });
       sandbox.stub(dryRunner, "validatePackage", (json) => Promise.resolve(json));
-      sandbox.stub(fileUtils, "readPackage", () => Promise.resolve("mock json"));
+      sandbox.stub(fileUtils, "readPackage").returns(Promise.resolve("mock json"));
       sandbox.stub(git, "enableDry");
       sandbox.stub(logger, "enable");
 
@@ -86,10 +86,10 @@ describe("dryRunner", () => {
     });
 
     it("should call each dry run step", () => {
-      sandbox.stub(dryRunner, "beforeDryRun", () => Promise.resolve());
-      sandbox.stub(dryRunner, "postversion", () => Promise.resolve());
-      sandbox.stub(dryRunner, "postpublish", () => Promise.resolve());
-      sandbox.stub(dryRunner, "afterDryRun", () => Promise.resolve());
+      sandbox.stub(dryRunner, "beforeDryRun").returns(Promise.resolve());
+      sandbox.stub(dryRunner, "postversion").returns(Promise.resolve());
+      sandbox.stub(dryRunner, "postpublish").returns(Promise.resolve());
+      sandbox.stub(dryRunner, "afterDryRun").returns(Promise.resolve());
 
       return dryRunner.run().then(() => {
         expect(dryRunner.beforeDryRun).to.have.callCount(1);
@@ -173,7 +173,7 @@ describe("dryRunner", () => {
         path: filePath,
         stats: "mock stats"
       }));
-      sandbox.stub(dryRunner, "validateFileWrite", () => Promise.resolve());
+      sandbox.stub(dryRunner, "validateFileWrite").returns(Promise.resolve());
 
       mockfs({
         ".babelrc.publishr": "mock contents",
@@ -215,7 +215,7 @@ describe("dryRunner", () => {
 
   describe("validateFileRead", () => {
     it("should validate a file read", () => {
-      sandbox.stub(fileUtils, "statFile", () => Promise.resolve("mock stats"));
+      sandbox.stub(fileUtils, "statFile").returns(Promise.resolve("mock stats"));
 
       return dryRunner.validateFileRead(".npmignore.publishr").then((result) => {
         expect(result).to.deep.equal({
@@ -226,7 +226,7 @@ describe("dryRunner", () => {
     });
 
     it("should invalidate a file read", () => {
-      sandbox.stub(fileUtils, "statFile", () => Promise.reject("mock error"));
+      sandbox.stub(fileUtils, "statFile").returns(Promise.reject("mock error"));
 
       return dryRunner.validateFileRead(".npmignore.publishr").catch((err) => {
         expect(err).to.equal("mock error");
@@ -236,7 +236,7 @@ describe("dryRunner", () => {
 
   describe("validateFileWrite", () => {
     it("should validate a file write", () => {
-      sandbox.stub(fileUtils, "statFile", () => Promise.resolve("mock stats"));
+      sandbox.stub(fileUtils, "statFile").returns(Promise.resolve("mock stats"));
 
       return dryRunner.validateFileWrite(".npmignore.publishr").then((result) => {
         expect(result).to.deep.equal({
@@ -247,7 +247,7 @@ describe("dryRunner", () => {
     });
 
     it("should validate a file write for no file", () => {
-      sandbox.stub(fileUtils, "statFile", () => Promise.reject({code: "ENOENT"}));
+      sandbox.stub(fileUtils, "statFile").returns(Promise.reject({code: "ENOENT"}));
 
       return dryRunner.validateFileWrite(".npmignore.publishr").then((result) => {
         expect(result).to.equal(undefined);
@@ -255,7 +255,7 @@ describe("dryRunner", () => {
     });
 
     it("should invalidate a file write", () => {
-      sandbox.stub(fileUtils, "statFile", () => Promise.reject({code: "EACCES"}));
+      sandbox.stub(fileUtils, "statFile").returns(Promise.reject({code: "EACCES"}));
 
       return dryRunner.validateFileWrite(".npmignore.publishr").catch((err) => {
         expect(err).to.have.property("code", "EACCES");

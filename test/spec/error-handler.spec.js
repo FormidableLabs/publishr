@@ -30,7 +30,7 @@ describe("errorHandler", () => {
     it("should handle an error without a stack", () => {
       const err = {toString: () => {}};
 
-      sandbox.stub(err, "toString", () => "mock error");
+      sandbox.stub(err, "toString").returns("mock error");
 
       errorHandler.onError(err);
       expect(logger.enable).to.have.callCount(1);

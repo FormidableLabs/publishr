@@ -20,8 +20,8 @@ describe("postversion", () => {
     };
     const files = [{newPath: "file.js"}];
 
-    sandbox.stub(fileHandler, "overwriteFiles", () => Promise.resolve(files));
-    sandbox.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
+    sandbox.stub(fileHandler, "overwriteFiles").returns(Promise.resolve(files));
+    sandbox.stub(fileUtils, "readPackage").returns(Promise.resolve(contents));
 
     return postversion.run().then(() => {
       expect(fileUtils.readPackage).to.have.callCount(1);
