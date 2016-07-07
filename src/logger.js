@@ -27,8 +27,8 @@ const logger = {
     }
   },
 
-  info(message) {
-    logger.log(message);
+  info(...args) {
+    logger.log(...args);
   },
 
   log(...args) {

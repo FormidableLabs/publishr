@@ -46,10 +46,10 @@ describe("logger", () => {
   it("should log info", () => {
     sandbox.stub(logger, "log");
 
-    logger.info("mock message");
+    logger.info("mock message 1", "mock message 2");
     expect(logger.log)
       .to.have.callCount(1).and
-      .to.have.been.calledWith("mock message");
+      .to.have.been.calledWith("mock message 1", "mock message 2");
   });
 
   it("should log when enabled", () => {

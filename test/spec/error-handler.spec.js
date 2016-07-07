@@ -49,41 +49,31 @@ describe("errorHandler", () => {
       expect(errorHandler.onError)
         .to.have.callCount(1).and
         .to.have.been.calledWith("mock error");
-      expect(logger.info).to.have.callCount(1);
+      expect(logger.info).to.have.callCount(3);
     });
   });
 
   describe("postpublishError", () => {
     it("should handle a postpublish error", () => {
-      sandbox.stub(errorHandler, "scriptError");
+      sandbox.stub(errorHandler, "onError");
 
       errorHandler.postpublishError("mock error");
-      expect(errorHandler.scriptError)
+      expect(errorHandler.onError)
         .to.have.callCount(1).and
-        .to.have.been.calledWith("mock error", "postpublish");
+        .to.have.been.calledWith("mock error");
+      expect(logger.info).to.have.callCount(6);
     });
   });
 
   describe("postversionError", () => {
     it("should handle a postversion error", () => {
-      sandbox.stub(errorHandler, "scriptError");
-
-      errorHandler.postversionError("mock error");
-      expect(errorHandler.scriptError)
-        .to.have.callCount(1).and
-        .to.have.been.calledWith("mock error", "postversion");
-    });
-  });
-
-  describe("scriptError", () => {
-    it("should handle a script error", () => {
       sandbox.stub(errorHandler, "onError");
 
-      errorHandler.scriptError("mock error");
+      errorHandler.postversionError("mock error");
       expect(errorHandler.onError)
         .to.have.callCount(1).and
         .to.have.been.calledWith("mock error");
-      expect(logger.info).to.have.callCount(1);
+      expect(logger.info).to.have.callCount(7);
     });
   });
 });

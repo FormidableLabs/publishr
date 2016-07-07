@@ -1,5 +1,3 @@
-/* eslint-disable no-magic-numbers */
-
 import args from "args";
 import sinon from "sinon";
 import yargs from "yargs";
