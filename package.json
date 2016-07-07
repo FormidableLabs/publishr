@@ -16,6 +16,10 @@
     "postversion": "npm run build && node lib/cli.js postversion",
     "unit": "NODE_PATH=src babel-node node_modules/.bin/_mocha --require test/main.js --recursive test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FormidableLabs/publishr.git"
+  },
   "keywords": [
     "git",
     "npm",
@@ -32,7 +36,8 @@
     "log-symbols": "^1.0.2",
     "mock-fs": "^3.9.0",
     "object-assign": "^4.1.0",
-    "rimraf": "^2.5.2"
+    "rimraf": "^2.5.2",
+    "yargs": "^4.7.1"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",

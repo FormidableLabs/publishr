@@ -133,7 +133,7 @@ describe("fileHandler", () => {
     it("should reject on an error", () => {
       const mockErr = new Error("Something bad happend!");
 
-      sandbox.stub(fileUtils, "statFiles", () => Promise.reject(mockErr));
+      sandbox.stub(fileUtils, "statFiles").returns(Promise.reject(mockErr));
 
       return fileHandler.overwriteFiles({
         publishr: {
@@ -186,7 +186,7 @@ describe("fileHandler", () => {
         path: ".npmignore"
       }];
 
-      sandbox.stub(fileUtils, "writePackage", () => Promise.resolve());
+      sandbox.stub(fileUtils, "writePackage").returns(Promise.resolve());
       sandbox.stub(packageUtils, "updateDependencies");
       sandbox.stub(packageUtils, "updateMeta");
 

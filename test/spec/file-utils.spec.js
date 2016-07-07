@@ -1,20 +1,12 @@
 import {Promise} from "es6-promise";
 import fileUtils from "file-utils";
 import mockfs from "mock-fs";
-import sinon from "sinon";
 import testHelpers from "../test-helpers";
 
 
 describe("fileUtils", () => {
-  let sandbox;
-
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create();
-  });
-
   afterEach(() => {
     mockfs.restore();
-    sandbox.restore();
   });
 
   describe("readFiles", () => {

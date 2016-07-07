@@ -1,25 +1,35 @@
 #!/usr/bin/env node
 
+import args from "./args";
 import dryRunner from "./dry-runner";
+import errorHandler from "./error-handler";
+import logger from "./logger";
 import postpublish from "./postpublish";
 import postversion from "./postversion";
 
 
-const main = (cmd) => {
-  if (cmd === "postpublish") {
-    postpublish.run();
-  } else if (cmd === "postversion") {
-    postversion.run();
+const main = () => {
+  const argv = args.init().argv;
+  const cmd = argv._[0];
+
+  if (argv.verbose) {
+    logger.enable();
+  }
+
+  if (cmd === "postversion") {
+    postversion.run().catch(errorHandler.postversionError);
+  } else if (cmd === "postpublish") {
+    postpublish.run().catch(errorHandler.postpublishError);
   } else if (cmd === "dry-run") {
-    dryRunner.run();
+    dryRunner.run().catch(errorHandler.dryRunnerError);
   } else {
-    throw new Error(`Unknown command ${cmd}`);
+    args.showHelp();
   }
 };
 
 /* istanbul ignore if */
 if (require.main === module) {
-  main(process.argv[2]);
+  main();
 }
 
 export default main;

@@ -24,7 +24,7 @@ describe("postpublish", () => {
       }]
     };
 
-    sandbox.stub(fileUtils, "readPackage", () => Promise.resolve(contents));
+    sandbox.stub(fileUtils, "readPackage").returns(Promise.resolve(contents));
     sandbox.stub(fileHandler, "fixFiles");
 
     return postpublish.run().then(() => {

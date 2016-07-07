@@ -1,3 +1,4 @@
+import {Promise} from "es6-promise";
 import fileUtils from "./file-utils";
 import git from "./git";
 import packageUtils from "./package-utils";

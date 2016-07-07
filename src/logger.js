@@ -13,7 +13,13 @@ const logger = {
     logger.enabled = true;
   },
 
-  error(message, err) {
+  error(message) {
+    if (logger.enabled) {
+      console.error(chalk.red(message)); // eslint-disable-line no-console
+    }
+  },
+
+  fail(message, err) {
     logger.log(`${logSymbols.error}  ${chalk.gray(message)}`);
 
     if (err && err.message) {
@@ -21,8 +27,8 @@ const logger = {
     }
   },
 
-  info(message) {
-    logger.log(chalk.white(message));
+  info(...args) {
+    logger.log(...args);
   },
 
   log(...args) {
@@ -31,7 +37,7 @@ const logger = {
     }
   },
 
-  success(message) {
+  pass(message) {
     logger.log(`${logSymbols.success}  ${chalk.gray(message)}`);
   }
 };
