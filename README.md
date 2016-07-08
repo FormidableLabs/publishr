@@ -20,7 +20,7 @@ Ideally, the git repository only contains source code and the npm repository con
 compiled code. Furthermore, the npm repository should not contain any large build dependencies.
 Publishr solves these problems by tapping into [npm's version/publish lifecycle scripts][npm_scripts_docs].
 
-## Install
+## Installation
 
 ```sh
 $ npm install publishr
