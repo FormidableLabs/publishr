@@ -11,7 +11,7 @@ which enables efficient installation from both types of repository.
 
 ## Motivation
 
-It can be troublesome to enable package installation from both npm and a git repository,
+It can be troublesome to enable package installation from both npm and git repositories,
 especially when a project includes build steps. One inefficient publishing solution entails
 saving both source and compiled files to git and npm. Another less than ideal solution requires
 installing heavy build dependencies in production. Depending on the size of your 
