@@ -75,10 +75,10 @@ An example `package.json` file will look something like this:
 The above configuration does a few things:
 
 1. Moves all `dependencies` starting with "babel" to `devDependencies` before publishing to npm.
-2. Replaces `.npmignore` with `.npmignore.publishr` before publishing to npm.
-2. Replaces `.someconfig` with `.someconfig.publishr` before publishing to npm.
+2. Replaces `.npmignore` with the contents of `.npmignore.publishr` before publishing to npm.
+2. Replaces `.someconfig` with the contents of `.someconfig.publishr` before publishing to npm.
 
-When all is said and done, the git and npm repo will have different versions of `package.json`, `.npmignore`, and `someconfig.yml`. Your npm package will install as quickly as possible and you still support installing from a git repo.
+When all is said and done, the git and npm repo will have different versions of `package.json`, `.npmignore`, and `.someconfig`. Your npm package will install as quickly as possible and you still support installing from a git repo.
 
 ## Usage 
 
