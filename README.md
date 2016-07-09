@@ -6,8 +6,8 @@
 
 A tool for harmonious publishing of git and npm packages.
 
-Publishr allows you to consistently publish different files in git and npm, 
-which enables efficient installation from both types of repository. 
+Publishr allows you to consistently publish different files in git and npm using an **npm version workflow**,
+which enables efficient installation from both types of repository.
 
 ## Motivation
 
@@ -32,7 +32,9 @@ $ npm install publishr
 2. Save placeholder (ex. `.someconfig.publishr`) files that should be replaced in the npm repo.
 3. Add a `publishr` config to `package.json`.
 4. Use `publishr.dependencies` to describe which build `dependencies` should be replaced in the npm repo.
+  4a. The `publishr.dependencies` config takes an array of regular expression strings.
 5. Use `publishr.files` to describe which files should be replaced in the npm repo.
+  5a. The `publishr.files` config takes an object with `new file path` keys and `old file path` values.
 6. Add `publishr postversion` to [npm's postversion script][npm_scripts_docs].
 7. Add `publishr postpublish` to [npm's postpublish script][npm_scripts_docs].
 
@@ -72,11 +74,42 @@ An example `package.json` file will look something like this:
   }
 ```
 
-The above configuration does a few things:
+The above configuration tells publishr to do a few things:
 
-1. Moves all `dependencies` starting with "babel" to `devDependencies` before publishing to npm.
-2. Replaces `.npmignore` with the contents of `.npmignore.publishr` before publishing to npm.
-2. Replaces `.someconfig` with the contents of `.someconfig.publishr` before publishing to npm.
+1. Move all `dependencies` matching the regular expression `^babel` to `devDependencies` before publishing to npm.
+2. Replace `.npmignore` with the contents of `.npmignore.publishr` before publishing to npm.
+2. Replace `.someconfig` with the contents of `.someconfig.publishr` before publishing to npm.
+
+The version command will look something like this:
+
+```shell
+$ npm version patch
+```
+
+Result:
+
+```
+v0.0.2
+
+> some-neat-project@0.0.2 postversion /some/path
+> publishr postversion
+
+
+The publish command will look something like this:
+
+```shell
+$ npm publish
+```
+
+Result:
+
+```
++ some-neat-project@0.0.2
+
+> some-neat-project@0.0.2 postpublish /some/path
+> publishr postpublish
+
+```
 
 When all is said and done, the git and npm repo will have different versions of `package.json`, `.npmignore`, and `.someconfig`. Your npm package will install as quickly as possible and you still support installing from a git repo.
 
