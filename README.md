@@ -93,7 +93,7 @@ v0.0.2
 
 > some-neat-project@0.0.2 postversion /some/path
 > publishr postversion
-
+```
 
 The publish command will look something like this:
 
