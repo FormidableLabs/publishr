@@ -32,9 +32,9 @@ $ npm install publishr
 2. Save placeholder (ex. `.someconfig.publishr`) files that should be replaced in the npm repo.
 3. Add a `publishr` config to `package.json`.
 4. Use `publishr.dependencies` to describe which build `dependencies` should be replaced in the npm repo.
-..1. The `publishr.dependencies` config takes an array of regular expression strings.
+  1. The `publishr.dependencies` config takes an array of regular expression strings.
 5. Use `publishr.files` to describe which files should be replaced in the npm repo.
-..1. The `publishr.files` config takes an object with `new file path` keys and `old file path` values.
+  1. The `publishr.files` config takes an object with `new file path` keys and `old file path` values.
 6. Add `publishr postversion` to [npm's postversion script][npm_scripts_docs].
 7. Add `publishr postpublish` to [npm's postpublish script][npm_scripts_docs].
 
