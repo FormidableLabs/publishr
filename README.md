@@ -26,17 +26,26 @@ Publishr solves these problems by tapping into [npm's version/publish lifecycle 
 $ npm install publishr
 ```
 
-## Configuration
+## Setup
 
 1. Save all build dependencies to `package.json` as `dependencies`.
 2. Save placeholder (ex. `.someconfig.publishr`) files that should be replaced in the npm repo.
 3. Add a `publishr` config to `package.json`.
-4. Use `publishr.dependencies` to describe which build `dependencies` should be replaced in the npm repo.
-  1. The `publishr.dependencies` config takes an array of regular expression strings.
-5. Use `publishr.files` to describe which files should be replaced in the npm repo.
-  1. The `publishr.files` config takes an object with `new file path` keys and `old file path` values.
+4. Use `publishr.dependencies` to describe which build dependencies to replace in the npm repo.
+5. Use `publishr.files` to describe files to replace/create in the npm repo.
 6. Add `publishr postversion` to [npm's postversion script][npm_scripts_docs].
 7. Add `publishr postpublish` to [npm's postpublish script][npm_scripts_docs].
+
+## Configuration
+
+1. `publishr.dependencies` - Describes build dependencies to replace in the npm repo.
+  * Takes an array of **regular expression strings**. 
+    * `["^babel$"]` matches only `babel` 
+    * `["^babel"]` matches `babel`, `babel-core`
+    * `["babel"]` matches `babel`, `babel-core`, `is-babel`
+2. `publishr.files` - Describes files to replace/create in the npm repo.
+  * Takes an object of oldFile keys to newFile values
+    * `{".npmignore": ".npmignore.publishr"}` replaces/creates `.npmignore` with `.npmignore.publishr`
 
 ## Publishing
 
