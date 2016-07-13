@@ -39,7 +39,7 @@ $ npm install publishr
 ## Configuration
 
 1. `publishr.dependencies` - Describes build dependencies to replace in the npm repo.
-  * Takes an array of **regular expression strings**. 
+  * Takes an array of **regular expression strings**
     * `["^babel$"]` matches only `babel` 
     * `["^babel"]` matches `babel`, `babel-core`
     * `["babel"]` matches `babel`, `babel-core`, `is-babel`
