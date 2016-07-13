@@ -1,6 +1,6 @@
 {
   "name": "publishr",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "A tool for harmonious publishing of git and npm packages.",
   "bin": {
     "publishr": "bin/publishr.js"
