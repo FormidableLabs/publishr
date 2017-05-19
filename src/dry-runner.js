@@ -1,4 +1,5 @@
-import {Promise} from "es6-promise";
+import { Promise } from "es6-promise";
+import { NUM_JSON_SPACES } from "./constants";
 import fileUtils from "./file-utils";
 import git from "./git";
 import logger from "./logger";
@@ -34,7 +35,7 @@ const dryRunner = {
   },
 
   patchFileSystem(packageJSON, files) {
-    mockfs = require("mock-fs");
+    mockfs = require("mock-fs"); // eslint-disable-line global-require
 
     const fileSystem = files.reduce((result, file) => {
       result[file.path] = mockfs.file({
@@ -44,7 +45,7 @@ const dryRunner = {
 
       return result;
     }, {
-      "package.json": JSON.stringify(packageJSON, null, 2)
+      "package.json": JSON.stringify(packageJSON, null, NUM_JSON_SPACES)
     });
 
     mockfs(fileSystem);

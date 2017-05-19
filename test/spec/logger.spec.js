@@ -18,7 +18,7 @@ describe("logger", () => {
   it("should log an fail message with an error", () => {
     sandbox.stub(logger, "log");
 
-    logger.fail("mock message", {message: "mock error message"});
+    logger.fail("mock message", { message: "mock error message" });
     expect(logger.log)
       .to.have.callCount(2).and
       .to.have.been.calledWith(`${logSymbols.error}  ${chalk.gray("mock message")}`).and

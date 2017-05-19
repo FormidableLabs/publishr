@@ -1,7 +1,7 @@
 import args from "args";
 import cli from "cli";
 import dryRunner from "dry-runner";
-import {Promise} from "es6-promise";
+import { Promise } from "es6-promise";
 import logger from "logger";
 import postpublish from "postpublish";
 import postversion from "postversion";

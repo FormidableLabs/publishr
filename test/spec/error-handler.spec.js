@@ -19,7 +19,7 @@ describe("errorHandler", () => {
 
   describe("onError", () => {
     it("should handle an error with a stack", () => {
-      const err = {stack: "mock stack"};
+      const err = { stack: "mock stack" };
 
       errorHandler.onError(err);
       expect(logger.error)
@@ -28,7 +28,7 @@ describe("errorHandler", () => {
     });
 
     it("should handle an error without a stack", () => {
-      const err = {toString: () => {}};
+      const err = { toString: () => {} };
 
       sandbox.stub(err, "toString").returns("mock error");
 

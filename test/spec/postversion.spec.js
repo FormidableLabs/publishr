@@ -1,4 +1,4 @@
-import {Promise} from "es6-promise";
+import { Promise } from "es6-promise";
 import fileHandler from "file-handler";
 import fileUtils from "file-utils";
 import postversion from "postversion";
@@ -18,7 +18,7 @@ describe("postversion", () => {
         dependencies: ["^babel"]
       }
     };
-    const files = [{newPath: "file.js"}];
+    const files = [{ newPath: "file.js" }];
 
     sandbox.stub(fileHandler, "overwriteFiles").returns(Promise.resolve(files));
     sandbox.stub(fileUtils, "readPackage").returns(Promise.resolve(contents));

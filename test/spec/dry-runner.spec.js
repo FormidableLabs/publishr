@@ -1,5 +1,5 @@
 import dryRunner from "dry-runner";
-import {Promise} from "es6-promise";
+import { Promise } from "es6-promise";
 import fileUtils from "file-utils";
 import git from "git";
 import logger from "logger";
@@ -39,7 +39,7 @@ describe("dryRunner", () => {
     it("should set up before the dry run", () => {
       sandbox.stub(dryRunner, "patchFileSystem").returns(Promise.resolve());
       sandbox.stub(dryRunner, "validateFiles", (json) => {
-        return Promise.resolve({files: "mock files", json});
+        return Promise.resolve({ files: "mock files", json });
       });
       sandbox.stub(dryRunner, "validatePackage", (json) => Promise.resolve(json));
       sandbox.stub(fileUtils, "readPackage").returns(Promise.resolve("mock json"));
@@ -247,7 +247,7 @@ describe("dryRunner", () => {
     });
 
     it("should validate a file write for no file", () => {
-      sandbox.stub(fileUtils, "statFile").returns(Promise.reject({code: "ENOENT"}));
+      sandbox.stub(fileUtils, "statFile").returns(Promise.reject({ code: "ENOENT" }));
 
       return dryRunner.validateFileWrite(".npmignore.publishr").then((result) => {
         expect(result).to.equal(undefined);
@@ -255,7 +255,7 @@ describe("dryRunner", () => {
     });
 
     it("should invalidate a file write", () => {
-      sandbox.stub(fileUtils, "statFile").returns(Promise.reject({code: "EACCES"}));
+      sandbox.stub(fileUtils, "statFile").returns(Promise.reject({ code: "EACCES" }));
 
       return dryRunner.validateFileWrite(".npmignore.publishr").catch((err) => {
         expect(err).to.have.property("code", "EACCES");

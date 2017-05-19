@@ -1,5 +1,6 @@
-import {Promise} from "es6-promise";
+import { Promise } from "es6-promise";
 import fs from "fs";
+import { NUM_JSON_SPACES } from "./constants";
 import logger from "./logger";
 
 
@@ -112,7 +113,7 @@ const fileUtils = {
     let contents;
 
     try {
-      contents = JSON.stringify(json, null, 2);
+      contents = JSON.stringify(json, null, NUM_JSON_SPACES);
     } catch (err) {
       return Promise.reject(err);
     }

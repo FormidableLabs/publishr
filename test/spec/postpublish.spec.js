@@ -1,4 +1,4 @@
-import {Promise} from "es6-promise";
+import { Promise } from "es6-promise";
 import fileUtils from "file-utils";
 import fileHandler from "file-handler";
 import postpublish from "postpublish";
