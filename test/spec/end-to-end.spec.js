@@ -26,6 +26,11 @@ describe("end-to-end", () => {
       ".babelrc.publishr": "new .babelrc content",
       ".npmignore.publishr": "new .npmignore content",
       "package.json": JSON.stringify({
+        scripts: {
+          cool: "echo 'not cool'",
+          postinstall: "npm run build",
+          test: "mocha"
+        },
         dependencies: {
           lodash: "^1.0.0",
           "babel-cli": "^6.0.0",
@@ -39,6 +44,11 @@ describe("end-to-end", () => {
           files: {
             ".babelrc": ".babelrc.publishr",
             ".npmignore": ".npmignore.publishr"
+          },
+          scripts: {
+            added: "echo 'added'",
+            cool: "echo 'cool'",
+            postinstall: ""
           }
         }
       })
@@ -55,6 +65,11 @@ describe("end-to-end", () => {
         expect(results[0]).to.equal("new .babelrc content");
         expect(results[1]).to.equal("new .npmignore content");
         expect(JSON.parse(results[2])).to.deep.equal({
+          scripts: {
+            added: "echo 'added'",
+            cool: "echo 'cool'",
+            test: "mocha"
+          },
           dependencies: {
             lodash: "^1.0.0"
           },
@@ -68,6 +83,11 @@ describe("end-to-end", () => {
             files: {
               ".babelrc": ".babelrc.publishr",
               ".npmignore": ".npmignore.publishr"
+            },
+            scripts: {
+              added: "echo 'added'",
+              cool: "echo 'cool'",
+              postinstall: ""
             }
           },
           _publishr: [{

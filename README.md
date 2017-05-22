@@ -33,8 +33,9 @@ $ npm install publishr
 3. Add a `publishr` config to `package.json`.
 4. Use `publishr.dependencies` to describe which build dependencies to replace in the npm repo.
 5. Use `publishr.files` to describe files to replace/create in the npm repo.
-6. Add `publishr postversion` to [npm's postversion script][npm_scripts_docs].
-7. Add `publishr postpublish` to [npm's postpublish script][npm_scripts_docs].
+6. Use `publishr.scripts` to describe scripts to add/replace/remove in the npm repo.
+7. Add `publishr postversion` to [npm's postversion script][npm_scripts_docs].
+8. Add `publishr postpublish` to [npm's postpublish script][npm_scripts_docs].
 
 ## Configuration
 
@@ -46,6 +47,10 @@ $ npm install publishr
 2. `publishr.files` - Describes files to replace/create in the npm repo.
   * Takes an object of oldFile keys to newFile values
     * `{".npmignore": ".npmignore.publishr"}` replaces/creates `.npmignore` with `.npmignore.publishr`
+3. `publishr.scripts` - Describes files to add/replace/remove in the npm repo.
+  * Takes an object of script name keys to command values.
+    * `{"hello": "echo hello"}` adds/replaces the test script `hello` with the command `echo hello`
+    * `{"postinstall": ""}` removes the `postinstall` script.
 
 ## Publishing
 
@@ -70,6 +75,8 @@ An example `package.json` file will look something like this:
       "eslint": "^1.0.0"
     },
     "scripts": {
+      "build": "gulp build",
+      "postinstall": "npm run build",
       "postpublish": "publishr postpublish",
       "postversion": "publishr postversion"
     },
@@ -78,6 +85,11 @@ An example `package.json` file will look something like this:
       "files": {
         ".npmignore": ".npmignore.publishr",
         ".someconfig": ".someconfig.publishr"
+      },
+      "scripts": {
+        "build": "echo 'No Build Needed'",
+        "extra": "echo 'Extra Script'",
+        "postinstall": ""
       }
     }
   }
@@ -87,7 +99,10 @@ The above configuration tells publishr to do a few things:
 
 1. Move all `dependencies` matching the regular expression `^babel` to `devDependencies` before publishing to npm.
 2. Replace `.npmignore` with the contents of `.npmignore.publishr` before publishing to npm.
-2. Replace `.someconfig` with the contents of `.someconfig.publishr` before publishing to npm.
+3. Replace `.someconfig` with the contents of `.someconfig.publishr` before publishing to npm.
+4. Replace the `build` script with `echo 'No Build Needed'` before publishing to npm.
+5. Add the `extra` script before publishing to npm.
+6. Remove the `postinstall` script before publishing to npm.
 
 The version command will look something like this:
 

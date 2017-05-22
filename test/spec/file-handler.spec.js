@@ -124,7 +124,8 @@ describe("fileHandler", () => {
             files: {
               "first.js": "first.js.publishr",
               "second.js": "second.js.publishr"
-            }
+            },
+            scripts: {}
           }
         });
       });
@@ -164,7 +165,8 @@ describe("fileHandler", () => {
         expect(json).to.deep.equal({
           publishr: {
             dependencies: [],
-            files: {}
+            files: {},
+            scripts: {}
           }
         });
       });
@@ -189,6 +191,7 @@ describe("fileHandler", () => {
       sandbox.stub(fileUtils, "writePackage").returns(Promise.resolve());
       sandbox.stub(packageUtils, "updateDependencies");
       sandbox.stub(packageUtils, "updateMeta");
+      sandbox.stub(packageUtils, "updateScripts");
 
       return fileHandler.overwritePackage(packageJSON, files).then(() => {
         expect(packageUtils.updateDependencies)
@@ -197,6 +200,9 @@ describe("fileHandler", () => {
         expect(packageUtils.updateMeta)
           .to.have.callCount(1).and
           .to.have.been.calledWith(packageJSON, files);
+        expect(packageUtils.updateScripts)
+          .to.have.callCount(1).and
+          .to.have.been.calledWith(packageJSON);
         expect(fileUtils.writePackage)
           .to.have.callCount(1).and
           .to.have.been.calledWith({

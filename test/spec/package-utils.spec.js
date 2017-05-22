@@ -119,4 +119,72 @@ describe("packageUtils", () => {
       });
     });
   });
+
+  describe("updateScripts", () => {
+    it("should handle no publishr", () => {
+      const packageJSON = {
+        scripts: {
+          "test": "mocha"
+        }
+      };
+
+      packageUtils.updateScripts(packageJSON);
+
+      expect(packageJSON).to.deep.equal({
+        scripts: {
+          "test": "mocha"
+        }
+      });
+    });
+
+    it("should handle no scripts", () => {
+      const packageJSON = {
+        publishr: {
+          "dependencies": "^babel"
+        }
+      };
+
+      packageUtils.updateScripts(packageJSON);
+
+      expect(packageJSON).to.deep.equal({
+        publishr: {
+          "dependencies": "^babel"
+        }
+      });
+    });
+
+    it("should update scripts", () => {
+      const packageJSON = {
+        publishr: {
+          "scripts": {
+            "added": "echo 'added'",
+            "cool": "echo 'cool'",
+            "postinstall": ""
+          }
+        },
+        scripts: {
+          cool: "echo 'not cool'",
+          postinstall: "npm run build",
+          test: "mocha"
+        }
+      };
+
+      packageUtils.updateScripts(packageJSON);
+
+      expect(packageJSON).to.deep.equal({
+        publishr: {
+          "scripts": {
+            "added": "echo 'added'",
+            "postinstall": "",
+            "cool": "echo 'cool'"
+          }
+        },
+        scripts: {
+          added: "echo 'added'",
+          cool: "echo 'cool'",
+          test: "mocha"
+        }
+      });
+    });
+  });
 });
