@@ -1,5 +1,6 @@
 ---
-"extends":
-  - "defaults/configurations/walmart/es6"
-"env":
-  "node": true
+extends:
+  - formidable/configurations/es6-node-test
+
+parserOptions:
+  sourceType: module

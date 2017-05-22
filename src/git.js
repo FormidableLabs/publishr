@@ -1,5 +1,5 @@
-import {exec} from "child_process";
-import {Promise} from "es6-promise";
+import { exec } from "child_process";
+import { Promise } from "es6-promise";
 import logger from "./logger";
 
 

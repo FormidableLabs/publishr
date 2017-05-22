@@ -1,0 +1,20 @@
+{
+  "all": true,
+  "branches": 100,
+  "functions": 100,
+  "include": ["src/*.js"],
+  "lines": 100,
+  "instrument": false,
+  "reporter": [
+    "lcov",
+    "html",
+    "text",
+    "text-summary"
+  ],
+  "require": [
+    "babel-register",
+    "./test/main"
+  ],
+  "statements": 100,
+  "sourceMap": false
+}

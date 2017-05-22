@@ -1,4 +1,4 @@
-import {Promise} from "es6-promise";
+import { Promise } from "es6-promise";
 import fileUtils from "file-utils";
 import mockfs from "mock-fs";
 import testHelpers from "../test-helpers";
