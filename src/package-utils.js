@@ -35,6 +35,28 @@ const packageUtils = {
     return json;
   },
 
+  updateScripts(json) {
+    if (!json.publishr || !json.publishr.scripts) {
+      return json;
+    }
+
+    json.scripts = objectAssign({}, json.scripts);
+
+    Object.keys(json.publishr.scripts).forEach((key) => {
+      const script = json.publishr.scripts[key];
+
+      if (!script) {
+        delete json.scripts[key];
+        logger.pass(`remove script '${key}'`);
+      } else {
+        json.scripts[key] = script;
+        logger.pass(`replace script '${key}'`);
+      }
+    });
+
+    return json;
+  },
+
   updateMeta(json, files) {
     json._publishr = files.map((file) => ({
       created: file.created,

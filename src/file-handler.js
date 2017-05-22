@@ -19,6 +19,7 @@ const fileHandler = {
     json.publishr = json.publishr || {};
     json.publishr.files = json.publishr.files || {};
     json.publishr.dependencies = json.publishr.dependencies || [];
+    json.publishr.scripts = json.publishr.scripts || {};
 
     const files = Object.keys(json.publishr.files).map((file) => ({
       newPath: file,
@@ -35,6 +36,7 @@ const fileHandler = {
   overwritePackage(json, files) {
     packageUtils.updateMeta(json, files);
     packageUtils.updateDependencies(json);
+    packageUtils.updateScripts(json);
 
     return fileUtils.writePackage(json);
   }
