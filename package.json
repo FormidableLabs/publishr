@@ -44,7 +44,7 @@
     "babel-eslint": "^7.0.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
-    "eslint": "^2.0.0",
+    "eslint": "^6.6.0",
     "eslint-config-formidable": "^2.0.0",
     "eslint-plugin-filenames": "^1.0.0",
     "eslint-plugin-import": "^2.0.0",
