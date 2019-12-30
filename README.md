@@ -161,7 +161,7 @@ Options:
 
 [maintenance-image]: https://img.shields.io/badge/maintenance-stable-blue.svg
 [trav_img]: https://img.shields.io/travis/FormidableLabs/publishr.svg
-[trav_site]: https://travis-ci.org/FormidableLabs/publishr
+[trav_site]: https://travis-ci.com/FormidableLabs/publishr
 [cov_img]: https://img.shields.io/coveralls/FormidableLabs/publishr.svg
 [cov_site]: https://coveralls.io/r/FormidableLabs/publishr
 [npm_img]: https://img.shields.io/npm/v/publishr.svg
